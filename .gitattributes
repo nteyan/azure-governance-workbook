@@ -34,6 +34,7 @@
 #*.modelproj merge=binary
 #*.sqlproj   merge=binary
 #*.wwaproj   merge=binary
+*.workbook   text eol=crlf
 
 ###############################################################################
 # behavior for image files
@@ -61,3 +62,5 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+*.workbook  linguist-language=JSON-with-Comments

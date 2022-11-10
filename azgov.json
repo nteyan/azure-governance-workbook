@@ -38,6 +38,9 @@
             "type": 9,
             "content": {
               "version": "KqlParameterItem/1.0",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
               "parameters": [
                 {
                   "id": "51aa3a9b-14e0-4c22-a60d-abdbf8813f00",
@@ -59,39 +62,12 @@
                   "timeContext": {
                     "durationMs": 86400000
                   },
-                  "defaultValue": "value::all",
-                  "value": [
-                    "value::all"
-                  ]
-                },
-                {
-                  "id": "08d7c05f-206d-4382-9fbd-fa4b31202bec",
-                  "version": "KqlParameterItem/1.0",
-                  "name": "ResourceGroup",
-                  "label": "Resource Group",
-                  "type": 2,
-                  "isGlobal": true,
-                  "multiSelect": true,
-                  "quote": "'",
-                  "delimiter": ",",
-                  "query": "resourceContainers | where type == 'microsoft.resources/subscriptions/resourcegroups'\r\n| project resourceGroup\r\n| sort by resourceGroup asc",
-                  "crossComponentResources": [
-                    "{Subscription}"
-                  ],
-                  "typeSettings": {
-                    "additionalResourceOptions": [
-                      "value::all"
-                    ],
-                    "showDefault": false
-                  },
-                  "defaultValue": "value::all",
-                  "queryType": 1,
-                  "resourceType": "microsoft.resourcegraph/resources"
+                  "defaultValue": "value::all"
                 }
               ],
               "style": "above",
-              "queryType": 0,
-              "resourceType": "microsoft.resourcegraph/resources"
+              "queryType": 1,
+              "resourceType": "microsoft.operationalinsights/workspaces"
             },
             "customWidth": "33",
             "conditionalVisibility": {
@@ -105,7 +81,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "Resources | where type =~ 'Microsoft.Compute/virtualMachines' | where resourceGroup in ({ResourceGroup}) | summarize count() by tostring(properties.storageProfile.osDisk.osType)",
+              "query": "Resources | where type =~ 'Microsoft.Compute/virtualMachines'\n| summarize count() by tostring(properties.storageProfile.osDisk.osType)",
               "size": 3,
               "title": "Virtual Machine Count per OS Type",
               "queryType": 1,
@@ -143,7 +119,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "Resources | where resourceGroup in ({ResourceGroup}) | summarize count()",
+              "query": "Resources\n| summarize count()",
               "size": 3,
               "title": "Resource Number",
               "queryType": 1,
@@ -170,7 +146,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "resources\r\n| where resourceGroup in ({ResourceGroup})\r\n| summarize count() by location",
+              "query": "resources\r\n| summarize count() by location",
               "size": 3,
               "queryType": 1,
               "resourceType": "microsoft.resourcegraph/resources",
@@ -200,7 +176,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "Resources \r\n| extend type = case(\r\ntype contains 'microsoft.netapp/netappaccounts', 'NetApp Accounts',\r\ntype contains \"microsoft.compute\", \"Azure Compute\",\r\ntype contains \"microsoft.logic\", \"LogicApps\",\r\ntype contains 'microsoft.keyvault/vaults', \"Key Vaults\",\r\ntype contains 'microsoft.storage/storageaccounts', \"Storage Accounts\",\r\ntype contains 'microsoft.compute/availabilitysets', 'Availability Sets',\r\ntype contains 'microsoft.operationalinsights/workspaces', 'Azure Monitor Resources',\r\ntype contains 'microsoft.operationsmanagement', 'Operations Management Resources',\r\ntype contains 'microsoft.insights', 'Azure Monitor Resources',\r\ntype contains 'microsoft.desktopvirtualization/applicationgroups', 'WVD Application Groups',\r\ntype contains 'microsoft.desktopvirtualization/workspaces', 'WVD Workspaces',\r\ntype contains 'microsoft.desktopvirtualization/hostpools', 'WVD Hostpools',\r\ntype contains 'microsoft.recoveryservices/vaults', 'Backup Vaults',\r\ntype contains 'microsoft.web', 'App Services',\r\ntype contains 'microsoft.managedidentity/userassignedidentities','Managed Identities',\r\ntype contains 'microsoft.storagesync/storagesyncservices', 'Azure File Sync',\r\ntype contains 'microsoft.hybridcompute/machines', 'ARC Machines',\r\ntype contains 'Microsoft.EventHub', 'Event Hub',\r\ntype contains 'Microsoft.EventGrid', 'Event Grid',\r\ntype contains 'Microsoft.Sql', 'SQL Resources',\r\ntype contains 'Microsoft.HDInsight/clusters', 'HDInsight Clusters',\r\ntype contains 'microsoft.devtestlab', 'DevTest Labs Resources',\r\ntype contains 'microsoft.containerinstance', 'Container Instances Resources',\r\ntype contains 'microsoft.portal/dashboards', 'Azure Dashboards',\r\ntype contains 'microsoft.containerregistry/registries', 'Container Registry',\r\ntype contains 'microsoft.automation', 'Automation Resources',\r\ntype contains 'sendgrid.email/accounts', 'SendGrid Accounts',\r\ntype contains 'microsoft.datafactory/factories', 'Data Factory',\r\ntype contains 'microsoft.databricks/workspaces', 'Databricks Workspaces',\r\ntype contains 'microsoft.machinelearningservices/workspaces', 'Machine Learnings Workspaces',\r\ntype contains 'microsoft.alertsmanagement/smartdetectoralertrules', 'Azure Monitor Resources',\r\ntype contains 'microsoft.apimanagement/service', 'API Management Services',\r\ntype contains 'microsoft.dbforpostgresql', 'PostgreSQL Resources',\r\ntype contains 'microsoft.scheduler/jobcollections', 'Scheduler Job Collections',\r\ntype contains 'microsoft.visualstudio/account', 'Azure DevOps Organization',\r\ntype contains 'microsoft.network/', 'Network Resources',\r\ntype contains 'microsoft.migrate/' or type contains 'microsoft.offazure', 'Azure Migrate Resources',\r\ntype contains 'microsoft.servicebus/namespaces', 'Service Bus Namespaces',\r\ntype contains 'microsoft.classic', 'ASM Obsolete Resources',\r\ntype contains 'microsoft.resources/templatespecs', 'Template Spec Resources',\r\ntype contains 'microsoft.virtualmachineimages', 'VM Image Templates',\r\ntype contains 'microsoft.documentdb', 'CosmosDB DB Resources',\r\ntype contains 'microsoft.alertsmanagement/actionrules', 'Azure Monitor Resources',\r\ntype contains 'microsoft.kubernetes/connectedclusters', 'ARC Kubernetes Clusters',\r\ntype contains 'microsoft.purview', 'Purview Resources',\r\ntype contains 'microsoft.security', 'Security Resources',\r\ntype contains 'microsoft.cdn', 'CDN Resources',\r\ntype contains 'microsoft.devices','IoT Resources',\r\ntype contains 'microsoft.datamigration', 'Data Migraiton Services',\r\ntype contains 'microsoft.cognitiveservices', 'Congitive Services',\r\ntype contains 'microsoft.customproviders', 'Custom Providers',\r\ntype contains 'microsoft.appconfiguration', 'App Services',\r\ntype contains 'microsoft.search', 'Search Services',\r\ntype contains 'microsoft.maps', 'Maps',\r\ntype contains 'microsoft.containerservice/managedclusters', 'AKS',\r\ntype contains 'microsoft.signalrservice', 'SignalR',\r\ntype contains 'microsoft.resourcegraph/queries', 'Resource Graph Queries',\r\ntype contains 'microsoft.batch', 'MS Batch',\r\ntype contains 'microsoft.analysisservices', 'Analysis Services',\r\ntype contains 'microsoft.synapse/workspaces', 'Synapse Workspaces',\r\ntype contains 'microsoft.synapse/workspaces/sqlpools', 'Synapse SQL Pools',\r\ntype contains 'microsoft.kusto/clusters', 'ADX Clusters',\r\ntype contains 'microsoft.resources/deploymentscripts', 'Deployment Scripts',\r\ntype contains 'microsoft.aad/domainservices', 'AD Domain Services',\r\ntype contains 'microsoft.labservices/labaccounts', 'Lab Accounts',\r\ntype contains 'microsoft.automanage/accounts', 'Automanage Accounts',\r\ntype contains 'microsoft.relay/namespaces', 'Azure Relay',\r\ntype contains 'microsoft.notificationhubs/namespaces', 'Notification Hubs',\r\ntype contains 'microsoft.digitaltwins/digitaltwinsinstances', 'Digital Twins',\r\nstrcat(\"Not Translated: \", type))\r\n| where resourceGroup in ({ResourceGroup})\r\n| summarize count() by type\r\n| order by count_ desc\r\n//| top 10 by count_",
+              "query": "Resources \r\n| extend type = case(\r\ntype contains 'microsoft.netapp/netappaccounts', 'NetApp Accounts',\r\ntype contains \"microsoft.compute\", \"Azure Compute\",\r\ntype contains \"microsoft.logic\", \"LogicApps\",\r\ntype contains 'microsoft.keyvault/vaults', \"Key Vaults\",\r\ntype contains 'microsoft.storage/storageaccounts', \"Storage Accounts\",\r\ntype contains 'microsoft.compute/availabilitysets', 'Availability Sets',\r\ntype contains 'microsoft.operationalinsights/workspaces', 'Azure Monitor Resources',\r\ntype contains 'microsoft.operationsmanagement', 'Operations Management Resources',\r\ntype contains 'microsoft.insights', 'Azure Monitor Resources',\r\ntype contains 'microsoft.desktopvirtualization/applicationgroups', 'WVD Application Groups',\r\ntype contains 'microsoft.desktopvirtualization/workspaces', 'WVD Workspaces',\r\ntype contains 'microsoft.desktopvirtualization/hostpools', 'WVD Hostpools',\r\ntype contains 'microsoft.recoveryservices/vaults', 'Backup Vaults',\r\ntype contains 'microsoft.web', 'App Services',\r\ntype contains 'microsoft.managedidentity/userassignedidentities','Managed Identities',\r\ntype contains 'microsoft.storagesync/storagesyncservices', 'Azure File Sync',\r\ntype contains 'microsoft.hybridcompute/machines', 'ARC Machines',\r\ntype contains 'Microsoft.EventHub', 'Event Hub',\r\ntype contains 'Microsoft.EventGrid', 'Event Grid',\r\ntype contains 'Microsoft.Sql', 'SQL Resources',\r\ntype contains 'Microsoft.HDInsight/clusters', 'HDInsight Clusters',\r\ntype contains 'microsoft.devtestlab', 'DevTest Labs Resources',\r\ntype contains 'microsoft.containerinstance', 'Container Instances Resources',\r\ntype contains 'microsoft.portal/dashboards', 'Azure Dashboards',\r\ntype contains 'microsoft.containerregistry/registries', 'Container Registry',\r\ntype contains 'microsoft.automation', 'Automation Resources',\r\ntype contains 'sendgrid.email/accounts', 'SendGrid Accounts',\r\ntype contains 'microsoft.datafactory/factories', 'Data Factory',\r\ntype contains 'microsoft.databricks/workspaces', 'Databricks Workspaces',\r\ntype contains 'microsoft.machinelearningservices/workspaces', 'Machine Learnings Workspaces',\r\ntype contains 'microsoft.alertsmanagement/smartdetectoralertrules', 'Azure Monitor Resources',\r\ntype contains 'microsoft.apimanagement/service', 'API Management Services',\r\ntype contains 'microsoft.dbforpostgresql', 'PostgreSQL Resources',\r\ntype contains 'microsoft.scheduler/jobcollections', 'Scheduler Job Collections',\r\ntype contains 'microsoft.visualstudio/account', 'Azure DevOps Organization',\r\ntype contains 'microsoft.network/', 'Network Resources',\r\ntype contains 'microsoft.migrate/' or type contains 'microsoft.offazure', 'Azure Migrate Resources',\r\ntype contains 'microsoft.servicebus/namespaces', 'Service Bus Namespaces',\r\ntype contains 'microsoft.classic', 'ASM Obsolete Resources',\r\ntype contains 'microsoft.resources/templatespecs', 'Template Spec Resources',\r\ntype contains 'microsoft.virtualmachineimages', 'VM Image Templates',\r\ntype contains 'microsoft.documentdb', 'CosmosDB DB Resources',\r\ntype contains 'microsoft.alertsmanagement/actionrules', 'Azure Monitor Resources',\r\ntype contains 'microsoft.kubernetes/connectedclusters', 'ARC Kubernetes Clusters',\r\ntype contains 'microsoft.purview', 'Purview Resources',\r\ntype contains 'microsoft.security', 'Security Resources',\r\ntype contains 'microsoft.cdn', 'CDN Resources',\r\ntype contains 'microsoft.devices','IoT Resources',\r\ntype contains 'microsoft.datamigration', 'Data Migraiton Services',\r\ntype contains 'microsoft.cognitiveservices', 'Congitive Services',\r\ntype contains 'microsoft.customproviders', 'Custom Providers',\r\ntype contains 'microsoft.appconfiguration', 'App Services',\r\ntype contains 'microsoft.search', 'Search Services',\r\ntype contains 'microsoft.maps', 'Maps',\r\ntype contains 'microsoft.containerservice/managedclusters', 'AKS',\r\ntype contains 'microsoft.signalrservice', 'SignalR',\r\ntype contains 'microsoft.resourcegraph/queries', 'Resource Graph Queries',\r\ntype contains 'microsoft.batch', 'MS Batch',\r\ntype contains 'microsoft.analysisservices', 'Analysis Services',\r\ntype contains 'microsoft.synapse/workspaces', 'Synapse Workspaces',\r\ntype contains 'microsoft.synapse/workspaces/sqlpools', 'Synapse SQL Pools',\r\ntype contains 'microsoft.kusto/clusters', 'ADX Clusters',\r\ntype contains 'microsoft.resources/deploymentscripts', 'Deployment Scripts',\r\ntype contains 'microsoft.aad/domainservices', 'AD Domain Services',\r\ntype contains 'microsoft.labservices/labaccounts', 'Lab Accounts',\r\ntype contains 'microsoft.automanage/accounts', 'Automanage Accounts',\r\ntype contains 'microsoft.relay/namespaces', 'Azure Relay',\r\ntype contains 'microsoft.notificationhubs/namespaces', 'Notification Hubs',\r\ntype contains 'microsoft.digitaltwins/digitaltwinsinstances', 'Digital Twins',\r\nstrcat(\"Not Translated: \", type))\r\n| summarize count() by type\r\n| order by count_ desc",
               "size": 3,
               "title": "Resource Number by Type (Top 10)",
               "showExportToExcel": true,
@@ -239,7 +215,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "Resources\r\n| where type =~ 'Microsoft.Compute/virtualMachines'\r\n| where resourceGroup in ({ResourceGroup})\r\n| project SKU = tostring(properties.hardwareProfile.vmSize)\r\n| summarize count() by SKU\r\n| order by count_ desc",
+              "query": "Resources\r\n| where type =~ 'Microsoft.Compute/virtualMachines'\r\n| project SKU = tostring(properties.hardwareProfile.vmSize)\r\n| summarize count() by SKU\r\n| order by count_ desc",
               "size": 3,
               "title": "VM by VM Type/Size",
               "showExportToExcel": true,
@@ -297,7 +273,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "advisorresources\r\n| where type == \"microsoft.advisor/recommendations\"\r\n| where tostring (properties.category) has \"Cost\"\r\n| where properties.shortDescription.problem has \"underutilized\"\r\n| where properties.impactedField has \"Compute\" or properties.impactedField has \"Container\" or properties.impactedField has \"Web\"\r\n| project AffectedResource=tostring(properties.resourceMetadata.resourceId),Impact=properties.impact,resourceGroup,AdditionaInfo=properties.extendedProperties,subscriptionId,Recommendation=tostring(properties.shortDescription.problem)\r\n| where resourceGroup in ({ResourceGroup})\r\n",
+              "query": "advisorresources\r\n| where type == \"microsoft.advisor/recommendations\"\r\n| where tostring (properties.category) has \"Cost\"\r\n| where properties.shortDescription.problem has \"underutilized\"\r\n| where properties.impactedField has \"Compute\" or properties.impactedField has \"Container\" or properties.impactedField has \"Web\"\r\n| project AffectedResource=tostring(properties.resourceMetadata.resourceId),Impact=properties.impact,resourceGroup,AdditionaInfo=properties.extendedProperties,subscriptionId,Recommendation=tostring(properties.shortDescription.problem)\r\n",
               "size": 0,
               "title": "Underused Assets",
               "queryType": 1,
@@ -320,7 +296,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "resourcechanges\r\n| extend changeTime = todatetime(properties.changeAttributes.timestamp), targetResourceId = tostring(properties.targetResourceId),\r\nchangeType = tostring(properties.changeType), correlationId = properties.changeAttributes.correlationId, \r\nchangedProperties = properties.changes, changeCount = properties.changeAttributes.changesCount\r\n| where changeTime > ago(1d)\r\n| where resourceGroup in ({ResourceGroup})\r\n| order by changeTime desc\r\n| project changeTime, targetResourceId, changeType, correlationId, changeCount, changedProperties",
+              "query": "resourcechanges\r\n| extend changeTime = todatetime(properties.changeAttributes.timestamp), targetResourceId = tostring(properties.targetResourceId),\r\nchangeType = tostring(properties.changeType), correlationId = properties.changeAttributes.correlationId, \r\nchangedProperties = properties.changes, changeCount = properties.changeAttributes.changesCount\r\n| where changeTime > ago(1d)\r\n| order by changeTime desc\r\n| project changeTime, targetResourceId, changeType, correlationId, changeCount, changedProperties",
               "size": 0,
               "title": "All changes in the past one day",
               "showExportToExcel": true,
@@ -336,7 +312,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "resourcechanges\r\n| extend changeTime = todatetime(properties.changeAttributes.timestamp), targetResourceId = tostring(properties.targetResourceId),\r\nchangeType = tostring(properties.changeType), correlationId = properties.changeAttributes.correlationId\r\n| where changeType == \"Delete\"\r\n| where resourceGroup in ({ResourceGroup})\r\n| order by changeTime desc\r\n| project changeTime, resourceGroup, targetResourceId, changeType, correlationId",
+              "query": "resourcechanges\r\n| extend changeTime = todatetime(properties.changeAttributes.timestamp), targetResourceId = tostring(properties.targetResourceId),\r\nchangeType = tostring(properties.changeType), correlationId = properties.changeAttributes.correlationId\r\n| where changeType == \"Delete\"\r\n| order by changeTime desc\r\n| project changeTime, resourceGroup, targetResourceId, changeType, correlationId",
               "size": 0,
               "title": "Resources deleted",
               "showExportToExcel": true,
@@ -359,7 +335,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "ResourceContainers\r\n| where type =~ 'microsoft.resources/subscriptions/resourcegroups'\r\n| where resourceGroup in ({ResourceGroup})\r\n| extend TagBool = iff(tags != '' and tags != '[]', \"Tagged\",\"Untagged\")\r\n| summarize count() by TagBool\r\n//| project resourceGroup, tags\r\n",
+              "query": "ResourceContainers\r\n| where type =~ 'microsoft.resources/subscriptions/resourcegroups'\r\n| extend TagBool = iff(tags != '' and tags != '[]', \"Tagged\",\"Untagged\")\r\n| summarize count() by TagBool\r\n",
               "size": 3,
               "title": "Resource Groups Tagging Compliance",
               "showExportToExcel": true,
@@ -416,7 +392,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "Resources\r\n| where resourceGroup in ({ResourceGroup})\r\n| extend TagBool = iff(tags != '' and tags != '[]', \"Tagged\",\"Untagged\")\r\n| summarize count() by TagBool\r\n\r\n",
+              "query": "Resources\r\n| extend TagBool = iff(tags != '' and tags != '[]', \"Tagged\",\"Untagged\")\r\n| summarize count() by TagBool\r\n\r\n",
               "size": 3,
               "title": "Resource Tagging Compliance",
               "showExportToExcel": true,
@@ -501,7 +477,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "resources \r\n| where tags =~ '' or tags =~ '{}'\r\n| where type in~ ({ResourceType}) or '*' in~ ({ResourceType})\r\n| where resourceGroup in ({ResourceGroup})\r\n| project Name=id, subscriptionId\r\n",
+              "query": "resources \r\n| where tags =~ '' or tags =~ '{}'\r\n| where type in~ ({ResourceType}) or '*' in~ ({ResourceType})\r\n| project Name=id, subscriptionId\r\n",
               "size": 3,
               "title": "Untagged Resources",
               "noDataMessage": "No Untagged Resources found",
@@ -525,7 +501,7 @@
               "version": "KqlItem/1.0",
               "query": "servicehealthresources\r\n| where type =~ 'Microsoft.ResourceHealth/events'\r\n| extend eventType = properties.EventType, status = properties.Status, description = properties.Title, trackingId = properties.TrackingId, summary = properties.Summary, priority = properties.Priority, impactStartTime = properties.ImpactStartTime, impactMitigationTime = properties.ImpactMitigationTime\r\n| where properties.Status == 'Active' and tolong(impactStartTime) > 1\r\n| project id, description, location, subscriptionId, properties, eventType, status",
               "size": 3,
-              "title": "All active Service Health events",
+              "title": "All active Service Health events",
               "showExportToExcel": true,
               "queryType": 1,
               "resourceType": "microsoft.resourcegraph/resources",
@@ -592,7 +568,8 @@
                   "type": 1,
                   "isGlobal": true,
                   "isHiddenWhenLocked": true,
-                  "label": "Resource ID"
+                  "label": "Resource ID",
+                  "value": "All"
                 },
                 {
                   "id": "e505498f-d2eb-4dd6-928f-0f0f0e9cc371",
@@ -601,7 +578,8 @@
                   "type": 1,
                   "isGlobal": true,
                   "isHiddenWhenLocked": true,
-                  "label": "Alert display name"
+                  "label": "Alert display name",
+                  "value": "All"
                 },
                 {
                   "id": "39e382f9-4780-40fa-8595-15eda0f08ad4",
@@ -610,12 +588,13 @@
                   "type": 1,
                   "isGlobal": true,
                   "isHiddenWhenLocked": true,
-                  "label": "New alert"
+                  "label": "New alert",
+                  "value": "All"
                 }
               ],
               "style": "above",
               "queryType": 0,
-              "resourceType": "microsoft.resourcegraph/resources"
+              "resourceType": "microsoft.operationalinsights/workspaces"
             },
             "name": "parameters - 15"
           },
@@ -1882,9 +1861,6 @@
                   "crossComponentResources": [
                     "{Subscription}"
                   ],
-                  "value": [
-                    "value::all"
-                  ],
                   "typeSettings": {
                     "additionalResourceOptions": [
                       "value::all"
@@ -2102,7 +2078,7 @@
     }
   ],
   "fallbackResourceIds": [
-    "Azure Monitor"
+    "azure monitor"
   ],
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
 }

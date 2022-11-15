@@ -33,14 +33,6 @@
             "style": "link"
           },
           {
-            "id": "94aa3033-0474-4be7-91cb-2bbc3f5b41f4",
-            "cellValue": "SelectedTab",
-            "linkTarget": "parameter",
-            "linkLabel": "Identity Discipline",
-            "subTarget": "Identity",
-            "style": "link"
-          },
-          {
             "id": "d8c7cb3a-67c1-473f-aa14-1321d96fbb9f",
             "cellValue": "SelectedTab",
             "linkTarget": "parameter",
@@ -2233,6 +2225,160 @@
               "value": "RC_Backup"
             },
             "name": "group - Backup"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "securityresources\r\n| where type == \"microsoft.security/securescores\"\r\n| extend subscriptionSecureScore = round(100 * bin((todouble(properties.score.current))/ todouble(properties.score.max), 0.001))\r\n| where subscriptionSecureScore > 0\r\n| project subscriptionSecureScore, subscriptionId\r\n| order by subscriptionSecureScore asc",
+                    "size": 1,
+                    "title": "Security Scores by Subscription",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "$gen_group",
+                          "formatter": 13,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": true
+                          }
+                        },
+                        {
+                          "columnMatch": "subscriptionSecureScore",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "max": 100,
+                            "palette": "redGreen"
+                          },
+                          "numberFormat": {
+                            "unit": 1,
+                            "options": {
+                              "style": "decimal",
+                              "useGrouping": false
+                            }
+                          }
+                        }
+                      ],
+                      "hierarchySettings": {
+                        "treeType": 1,
+                        "groupBy": [
+                          "subscriptionId"
+                        ],
+                        "expandTopLevel": true,
+                        "finalBy": "subscriptionSecureScore"
+                      }
+                    }
+                  },
+                  "name": "query - Monitor & Security - Security Scores"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "SecurityResources \r\n| where type == 'microsoft.security/securescores/securescorecontrols' \r\n| extend SecureControl = properties.displayName, unhealthy = properties.unhealthyResourceCount, currentscore = properties.score.current, maxscore = properties.score.max, subscriptionId\r\n| project SecureControl , unhealthy, currentscore, maxscore, subscriptionId",
+                    "size": 3,
+                    "title": "Security Scores by Control",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "$gen_group",
+                          "formatter": 13,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": true,
+                            "customColumnWidthSetting": "45ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "SecureControl",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "unhealthy",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "palette": "greenRed"
+                          }
+                        },
+                        {
+                          "columnMatch": "currentscore",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "palette": "redGreen"
+                          },
+                          "numberFormat": {
+                            "unit": 1,
+                            "options": {
+                              "style": "decimal"
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "maxscore",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "palette": "blue"
+                          }
+                        },
+                        {
+                          "columnMatch": "subscriptionId",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "subscriptionSecureScore",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "max": 100,
+                            "palette": "redGreen"
+                          },
+                          "numberFormat": {
+                            "unit": 1,
+                            "options": {
+                              "style": "decimal",
+                              "useGrouping": false
+                            }
+                          }
+                        }
+                      ],
+                      "hierarchySettings": {
+                        "treeType": 1,
+                        "groupBy": [
+                          "subscriptionId"
+                        ],
+                        "expandTopLevel": true,
+                        "finalBy": "SecureControl"
+                      }
+                    }
+                  },
+                  "name": "query - Monitor & Security - Security Scores by Control"
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "SelectedTab",
+              "comparison": "isEqualTo",
+              "value": "RC_Security"
+            },
+            "name": "group - Security"
           }
         ]
       },
@@ -2434,6 +2580,234 @@
               }
             },
             "name": "query - Data Compliance"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureActivity\r\n| where ActivityStatusValue has \"Failure\"\r\n| summarize AggregatedValue = count() by ResourceProviderValue\r\n| order by AggregatedValue desc",
+              "size": 3,
+              "showAnalytics": true,
+              "title": "Failures by Resources",
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.resources/subscriptions",
+              "crossComponentResources": [
+                "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
+              ],
+              "visualization": "piechart",
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "ResourceProviderValue",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "AggregatedValue",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "graphSettings": {
+                "type": 0,
+                "topContent": {
+                  "columnMatch": "ResourceProviderValue",
+                  "formatter": 1
+                },
+                "centerContent": {
+                  "columnMatch": "AggregatedValue",
+                  "formatter": 1,
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              }
+            },
+            "customWidth": "33",
+            "name": "query - Failures by Resources"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureActivity\r\n| where ActivityStatusValue has \"Failure\" or ActivityStatusValue has \"Failed\"\r\n| summarize AggregatedValue = count() by OperationNameValue\r\n| order by AggregatedValue desc",
+              "size": 3,
+              "showAnalytics": true,
+              "title": "Failures by Operations",
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.resources/subscriptions",
+              "crossComponentResources": [
+                "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
+              ],
+              "visualization": "piechart",
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "ResourceProviderValue",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "AggregatedValue",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "graphSettings": {
+                "type": 0,
+                "topContent": {
+                  "columnMatch": "ResourceProviderValue",
+                  "formatter": 1
+                },
+                "centerContent": {
+                  "columnMatch": "AggregatedValue",
+                  "formatter": 1,
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              }
+            },
+            "customWidth": "33",
+            "name": "query - Failures by Operations"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureActivity\r\n| where ActivityStatusValue has \"Failure\" or ActivityStatusValue has \"Failed\"\r\n| summarize AggregatedValue = count() by CategoryValue\r\n| order by AggregatedValue desc",
+              "size": 3,
+              "showAnalytics": true,
+              "title": "Failures by Category",
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.resources/subscriptions",
+              "crossComponentResources": [
+                "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
+              ],
+              "visualization": "piechart",
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "ResourceProviderValue",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "AggregatedValue",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "graphSettings": {
+                "type": 0,
+                "topContent": {
+                  "columnMatch": "ResourceProviderValue",
+                  "formatter": 1
+                },
+                "centerContent": {
+                  "columnMatch": "AggregatedValue",
+                  "formatter": 1,
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              }
+            },
+            "customWidth": "33",
+            "name": "query - Failures by Category"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureActivity\r\n| where ActivityStatusValue has \"Failure\" or ActivityStatusValue has \"Failed\"\r\n| order by CategoryValue\r\n",
+              "size": 0,
+              "title": "Failure by Category Details",
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.resources/subscriptions",
+              "crossComponentResources": [
+                "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Authorization",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Authorization_d",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Claims",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Claims_d",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Properties_d",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "_ResourceId",
+                    "formatter": 5
+                  }
+                ],
+                "filter": true
+              }
+            },
+            "name": "query - Failure by Category Details"
           }
         ]
       },

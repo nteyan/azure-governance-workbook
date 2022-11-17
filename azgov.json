@@ -25,6 +25,14 @@
             "style": "link"
           },
           {
+            "id": "7ce126b4-e77d-4d43-874e-73b6c20e3c1d",
+            "cellValue": "SelectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Cost Management",
+            "subTarget": "Cost",
+            "style": "link"
+          },
+          {
             "id": "c243225e-45da-4eb1-84c6-0b3e6cc79b53",
             "cellValue": "SelectedTab",
             "linkTarget": "parameter",
@@ -78,23 +86,15 @@
                   "timeContext": {
                     "durationMs": 86400000
                   },
-                  "defaultValue": "value::all",
-                  "value": [
-                    "value::all"
-                  ]
+                  "defaultValue": "value::all"
                 }
               ],
-              "style": "above",
+              "style": "formHorizontal",
+              "doNotRunWhenHidden": true,
               "queryType": 1,
               "resourceType": "microsoft.operationalinsights/workspaces"
             },
-            "customWidth": "33",
-            "conditionalVisibility": {
-              "parameterName": "SelectedTab",
-              "comparison": "isNotEqualTo",
-              "value": "CostInformation"
-            },
-            "name": "parameters - 0"
+            "name": "parameters - Subscription"
           },
           {
             "type": 11,
@@ -173,73 +173,6 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resourcecontainers \r\n| where type has \"microsoft.resources/subscriptions/resourcegroups\"\r\n| summarize Count=count(type) by type, subscriptionId | extend type = replace(@\"microsoft.resources/subscriptions/resourcegroups\", @\"Resource Groups\", type)",
-                    "size": 1,
-                    "title": "Subscriptions and Resource Groups",
-                    "showExportToExcel": true,
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": [
-                      "{Subscription}"
-                    ],
-                    "gridSettings": {
-                      "formatters": [
-                        {
-                          "columnMatch": "$gen_group",
-                          "formatter": 13,
-                          "formatOptions": {
-                            "linkTarget": null,
-                            "showIcon": true
-                          }
-                        },
-                        {
-                          "columnMatch": "type",
-                          "formatter": 16,
-                          "formatOptions": {
-                            "showIcon": true
-                          }
-                        },
-                        {
-                          "columnMatch": "subscriptionId",
-                          "formatter": 5
-                        }
-                      ],
-                      "hierarchySettings": {
-                        "treeType": 1,
-                        "groupBy": [
-                          "subscriptionId"
-                        ],
-                        "expandTopLevel": true
-                      }
-                    },
-                    "tileSettings": {
-                      "showBorder": false,
-                      "titleContent": {
-                        "columnMatch": "type",
-                        "formatter": 1
-                      },
-                      "leftContent": {
-                        "columnMatch": "Count",
-                        "formatter": 12,
-                        "formatOptions": {
-                          "palette": "auto"
-                        },
-                        "numberFormat": {
-                          "unit": 17,
-                          "options": {
-                            "maximumSignificantDigits": 3,
-                            "maximumFractionDigits": 2
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "name": "Subscriptions and Resource Groups"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
                     "query": "Resources\n| summarize count()",
                     "size": 3,
                     "title": "Count of All Resources",
@@ -257,11 +190,132 @@
                           "palette": "auto"
                         }
                       },
-                      "showBorder": false
+                      "showBorder": false,
+                      "size": "auto"
                     }
                   },
-                  "customWidth": "20",
                   "name": "Count of All Resources"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| summarize Count=count(id) by subscriptionId\r\n| order by Count desc",
+                    "size": 3,
+                    "title": "Resource count per Subscription (Top 10)",
+                    "showExportToExcel": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "visualization": "tiles",
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "subscriptionId",
+                          "formatter": 15,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": true
+                          }
+                        },
+                        {
+                          "columnMatch": "type",
+                          "formatter": 1
+                        }
+                      ],
+                      "rowLimit": 10,
+                      "hierarchySettings": {
+                        "treeType": 1,
+                        "groupBy": [
+                          "subscriptionId"
+                        ],
+                        "expandTopLevel": true
+                      },
+                      "labelSettings": [
+                        {
+                          "columnId": "subscriptionId",
+                          "label": "Subscription Name"
+                        }
+                      ]
+                    },
+                    "sortBy": [],
+                    "tileSettings": {
+                      "titleContent": {
+                        "columnMatch": "subscriptionId",
+                        "formatter": 15,
+                        "formatOptions": {
+                          "linkTarget": "Resource",
+                          "showIcon": true
+                        }
+                      },
+                      "leftContent": {
+                        "columnMatch": "Count",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 17,
+                          "options": {
+                            "style": "decimal",
+                            "maximumFractionDigits": 2,
+                            "maximumSignificantDigits": 3
+                          }
+                        }
+                      },
+                      "showBorder": false,
+                      "rowLimit": 10,
+                      "sortCriteriaField": "count_type",
+                      "sortOrderField": 2
+                    },
+                    "graphSettings": {
+                      "type": 0,
+                      "topContent": {
+                        "columnMatch": "subscriptionId",
+                        "formatter": 1
+                      },
+                      "centerContent": {
+                        "columnMatch": "Count",
+                        "formatter": 1,
+                        "numberFormat": {
+                          "unit": 17,
+                          "options": {
+                            "maximumSignificantDigits": 3,
+                            "maximumFractionDigits": 2
+                          }
+                        }
+                      }
+                    },
+                    "chartSettings": {
+                      "xAxis": "subscriptionId",
+                      "yAxis": [
+                        "Count"
+                      ],
+                      "showLegend": true,
+                      "seriesLabelSettings": [
+                        {
+                          "seriesName": "subscriptionId",
+                          "color": "greenDark"
+                        }
+                      ]
+                    },
+                    "mapSettings": {
+                      "locInfo": "LatLong",
+                      "sizeSettings": "Count",
+                      "sizeAggregation": "Sum",
+                      "legendMetric": "Count",
+                      "legendAggregation": "Sum",
+                      "itemColorSettings": {
+                        "type": "heatmap",
+                        "colorAggregation": "Sum",
+                        "nodeColorField": "Count",
+                        "heatmapPalette": "greenRed"
+                      }
+                    }
+                  },
+                  "name": "Resource count per Subscription (Top 10)"
                 },
                 {
                   "type": 3,
@@ -300,7 +354,6 @@
                       "rowLimit": 10
                     }
                   },
-                  "customWidth": "80",
                   "name": "Resource Number by Type"
                 },
                 {
@@ -496,11 +549,31 @@
                       "{Subscription}"
                     ],
                     "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "subscriptionId",
+                          "formatter": 15,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": true
+                          }
+                        }
+                      ],
                       "rowLimit": 100,
-                      "filter": true
+                      "filter": true,
+                      "labelSettings": [
+                        {
+                          "columnId": "Name",
+                          "label": "Resource Name"
+                        },
+                        {
+                          "columnId": "subscriptionId",
+                          "label": "Subscription"
+                        }
+                      ]
                     }
                   },
-                  "name": "query - 10"
+                  "name": "query - Untagged Resources"
                 }
               ]
             },
@@ -598,7 +671,7 @@
                   "content": {
                     "version": "KqlItem/1.0",
                     "query": "Resources\r\n| where type =~ 'Microsoft.Compute/virtualMachines'\r\n| project SKU = tostring(properties.hardwareProfile.vmSize)\r\n| summarize count() by SKU\r\n| order by count_ desc",
-                    "size": 3,
+                    "size": 1,
                     "title": "VM by VM Type/Size",
                     "showExportToExcel": true,
                     "queryType": 1,
@@ -606,7 +679,7 @@
                     "crossComponentResources": [
                       "{Subscription}"
                     ],
-                    "visualization": "tiles",
+                    "visualization": "barchart",
                     "tileSettings": {
                       "showBorder": false,
                       "titleContent": {
@@ -654,9 +727,142 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
+                    "query": "Resources\r\n| where type =~ 'microsoft.compute/virtualmachines'\r\n| extend nics=array_length(properties.networkProfile.networkInterfaces)\r\n| mv-expand nic=properties.networkProfile.networkInterfaces\r\n| where nics == 1 or nic.properties.primary =~ 'true' or isempty(nic)\r\n| project vmId = id, vmName = name, vmSize=tostring(properties.hardwareProfile.vmSize), nicId = tostring(nic.id)\r\n\t| join kind=leftouter (\r\n \t\tResources\r\n  \t\t| where type =~ 'microsoft.network/networkinterfaces'\r\n  \t\t| extend ipConfigsCount=array_length(properties.ipConfigurations)\r\n  \t\t| mv-expand ipconfig=properties.ipConfigurations\r\n  \t\t| where ipConfigsCount == 1 or ipconfig.properties.primary =~ 'true'\r\n  \t\t| project nicId = id, privateIP= tostring(ipconfig.properties.privateIPAddress), publicIpId = tostring(ipconfig.properties.publicIPAddress.id), subscriptionId) on nicId\r\n| project-away nicId1\r\n| summarize by vmId, subscriptionId, vmSize, nicId, privateIP, publicIpId\r\n\t| join kind=leftouter (\r\n  \t\tResources\r\n  \t\t| where type =~ 'microsoft.network/publicipaddresses'\r\n  \t\t| project publicIpId = id, publicIpAddress = tostring(properties.ipAddress)) on publicIpId\r\n| project-away publicIpId1\r\n| sort by publicIpAddress desc",
+                    "size": 0,
+                    "title": "Compute Networking",
+                    "showExportToExcel": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "subscriptionId",
+                          "formatter": 15,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": true
+                          }
+                        }
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {
+                          "columnId": "vmId",
+                          "label": "Resource Name"
+                        },
+                        {
+                          "columnId": "subscriptionId",
+                          "label": "Subscription"
+                        },
+                        {
+                          "columnId": "vmSize",
+                          "label": "VM Size"
+                        },
+                        {
+                          "columnId": "nicId",
+                          "label": "Network Interface"
+                        },
+                        {
+                          "columnId": "privateIP",
+                          "label": "Private IP"
+                        },
+                        {
+                          "columnId": "publicIpId",
+                          "label": "Public IP"
+                        },
+                        {
+                          "columnId": "publicIpAddress",
+                          "label": "Public IP Address"
+                        }
+                      ]
+                    }
+                  },
+                  "name": "Compute Networking"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "Resources | where type == \"microsoft.compute/virtualmachines\"\r\n| extend osDiskId= tostring(properties.storageProfile.osDisk.managedDisk.id)\r\n        | join kind=leftouter(resources\r\n            | where type =~ 'microsoft.compute/disks'\r\n            | where properties !has 'Unattached'\r\n            | where properties has 'osType'\r\n            | project OS = tostring(properties.osType), osSku = tostring(sku.name), osDiskSizeGB = toint(properties.diskSizeGB), osDiskId=tostring(id)) on osDiskId\r\n        | join kind=leftouter(Resources\r\n            | where type =~ 'microsoft.compute/disks'\r\n            | where properties !has \"osType\"\r\n            | where properties !has 'Unattached'\r\n            | project sku = tostring(sku.name), diskSizeGB = toint(properties.diskSizeGB), id = managedBy\r\n            | summarize sum(diskSizeGB), count(sku) by id, sku) on id\r\n| project vmId=id, subscriptionId, resourceGroup, OS, location, osDiskId, osSku, osDiskSizeGB, DataDisksGB=sum_diskSizeGB, diskSkuCount=count_sku\r\n| sort by diskSkuCount desc",
+                    "size": 0,
+                    "title": "Compute Disks",
+                    "showExportToExcel": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "subscriptionId",
+                          "formatter": 15,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": true
+                          }
+                        },
+                        {
+                          "columnMatch": "location",
+                          "formatter": 17
+                        }
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {
+                          "columnId": "vmId",
+                          "label": "Resource Name"
+                        },
+                        {
+                          "columnId": "subscriptionId",
+                          "label": "Subscription"
+                        },
+                        {
+                          "columnId": "resourceGroup",
+                          "label": "Resource Group"
+                        },
+                        {
+                          "columnId": "location",
+                          "label": "Region"
+                        },
+                        {
+                          "columnId": "osDiskId",
+                          "label": "OS Disk"
+                        },
+                        {
+                          "columnId": "osSku",
+                          "label": "OS Disk SKU"
+                        },
+                        {
+                          "columnId": "osDiskSizeGB",
+                          "label": "OS Disk Size"
+                        }
+                      ]
+                    }
+                  },
+                  "name": "Compute Disks"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "# Compute Optimization"
+                  },
+                  "name": "text - 9"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
                     "query": "advisorresources\r\n| where type == \"microsoft.advisor/recommendations\"\r\n| where tostring (properties.category) has \"Cost\"\r\n| where properties.shortDescription.problem has \"underutilized\"\r\n| where properties.impactedField has \"Compute\" or properties.impactedField has \"Container\" or properties.impactedField has \"Web\"\r\n| project AffectedResource=tostring(properties.resourceMetadata.resourceId),Impact=properties.impact,resourceGroup,AdditionaInfo=properties.extendedProperties,subscriptionId,Recommendation=tostring(properties.shortDescription.problem)\r\n",
                     "size": 0,
                     "title": "Underused Assets",
+                    "noDataMessage": "No underused asset",
+                    "noDataMessageStyle": 3,
                     "showExportToExcel": true,
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
@@ -671,55 +877,55 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "Resources\r\n| where type =~ 'microsoft.compute/virtualmachines'\r\n| extend nics=array_length(properties.networkProfile.networkInterfaces)\r\n| mv-expand nic=properties.networkProfile.networkInterfaces\r\n| where nics == 1 or nic.properties.primary =~ 'true' or isempty(nic)\r\n| project vmId = id, vmName = name, vmSize=tostring(properties.hardwareProfile.vmSize), nicId = tostring(nic.id)\r\n\t| join kind=leftouter (\r\n \t\tResources\r\n  \t\t| where type =~ 'microsoft.network/networkinterfaces'\r\n  \t\t| extend ipConfigsCount=array_length(properties.ipConfigurations)\r\n  \t\t| mv-expand ipconfig=properties.ipConfigurations\r\n  \t\t| where ipConfigsCount == 1 or ipconfig.properties.primary =~ 'true'\r\n  \t\t| project nicId = id, privateIP= tostring(ipconfig.properties.privateIPAddress), publicIpId = tostring(ipconfig.properties.publicIPAddress.id), subscriptionId) on nicId\r\n| project-away nicId1\r\n| summarize by vmId, vmSize, nicId, privateIP, publicIpId, subscriptionId\r\n\t| join kind=leftouter (\r\n  \t\tResources\r\n  \t\t| where type =~ 'microsoft.network/publicipaddresses'\r\n  \t\t| project publicIpId = id, publicIpAddress = tostring(properties.ipAddress)) on publicIpId\r\n| project-away publicIpId1\r\n| sort by publicIpAddress desc",
-                    "size": 0,
-                    "title": "Compute Networking",
-                    "showExportToExcel": true,
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": [
-                      "{Subscription}"
-                    ],
-                    "visualization": "table",
-                    "gridSettings": {
-                      "filter": true
-                    }
-                  },
-                  "name": "Compute Networking"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "Resources | where type == \"microsoft.compute/virtualmachines\"\r\n| extend osDiskId= tostring(properties.storageProfile.osDisk.managedDisk.id)\r\n        | join kind=leftouter(resources\r\n            | where type =~ 'microsoft.compute/disks'\r\n            | where properties !has 'Unattached'\r\n            | where properties has 'osType'\r\n            | project OS = tostring(properties.osType), osSku = tostring(sku.name), osDiskSizeGB = toint(properties.diskSizeGB), osDiskId=tostring(id)) on osDiskId\r\n        | join kind=leftouter(Resources\r\n            | where type =~ 'microsoft.compute/disks'\r\n            | where properties !has \"osType\"\r\n            | where properties !has 'Unattached'\r\n            | project sku = tostring(sku.name), diskSizeGB = toint(properties.diskSizeGB), id = managedBy\r\n            | summarize sum(diskSizeGB), count(sku) by id, sku) on id\r\n| project vmId=id, OS, location, resourceGroup, subscriptionId, osDiskId, osSku, osDiskSizeGB, DataDisksGB=sum_diskSizeGB, diskSkuCount=count_sku\r\n| sort by diskSkuCount desc",
-                    "size": 0,
-                    "title": "Compute Disks",
-                    "showExportToExcel": true,
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": [
-                      "{Subscription}"
-                    ],
-                    "visualization": "table",
-                    "gridSettings": {
-                      "filter": true
-                    }
-                  },
-                  "name": "Compute Disks"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "Resources  \r\n| where type contains \"microsoft.compute/disks\" \r\n| extend diskState = tostring(properties.diskState)\r\n| where managedBy == \"\"\r\n    or diskState == 'Unattached'\r\n| project id, diskState, resourceGroup, location, subscriptionId",
+                    "query": "Resources  \r\n| where type contains \"microsoft.compute/disks\" \r\n| extend diskState = tostring(properties.diskState)\r\n| where managedBy == \"\" or diskState == 'Unattached'\r\n| project id, subscriptionId, resourceGroup, diskState, location",
                     "size": 0,
                     "title": "Orphan Disks",
+                    "noDataMessage": "No orphan disk",
+                    "noDataMessageStyle": 3,
                     "showExportToExcel": true,
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
                     "crossComponentResources": [
                       "{Subscription}"
-                    ]
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "subscriptionId",
+                          "formatter": 15,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": true
+                          }
+                        },
+                        {
+                          "columnMatch": "location",
+                          "formatter": 17
+                        }
+                      ],
+                      "labelSettings": [
+                        {
+                          "columnId": "id",
+                          "label": "Resource Name"
+                        },
+                        {
+                          "columnId": "subscriptionId",
+                          "label": "Subscription"
+                        },
+                        {
+                          "columnId": "resourceGroup",
+                          "label": "Resource Group"
+                        },
+                        {
+                          "columnId": "diskState",
+                          "label": "Disk State"
+                        },
+                        {
+                          "columnId": "location",
+                          "label": "Region"
+                        }
+                      ]
+                    }
                   },
                   "name": "Orphan Disks"
                 },
@@ -727,7 +933,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources\r\n| where type contains \"microsoft.network/networkinterfaces\"\r\n| where properties !has 'virtualmachine'\r\n| project id, resourceGroup, location, subscriptionId",
+                    "query": "Resources\r\n| where type has \"microsoft.network/networkinterfaces\"\r\n| extend VM = properties.virtualMachine.id\r\n| extend privateEndPoint = properties['privateEndpoint']['id']\r\n| where properties !has 'virtualmachine' and isnull(privateEndPoint)\r\n| where properties['linkedResourceType'] != \"Microsoft.Netapp/volumes\"\r\n| project id, subscriptionId, resourceGroup, location, VM, privateEndPoint, properties\r\n",
                     "size": 0,
                     "title": "Orphan NICs",
                     "showExportToExcel": true,
@@ -735,9 +941,236 @@
                     "resourceType": "microsoft.resourcegraph/resources",
                     "crossComponentResources": [
                       "{Subscription}"
-                    ]
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "subscriptionId",
+                          "formatter": 15,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": true
+                          }
+                        },
+                        {
+                          "columnMatch": "location",
+                          "formatter": 17
+                        },
+                        {
+                          "columnMatch": "properties",
+                          "formatter": 7,
+                          "formatOptions": {
+                            "linkTarget": "CellDetails",
+                            "linkLabel": "🔍 View Details",
+                            "linkIsContextBlade": true
+                          }
+                        }
+                      ],
+                      "labelSettings": [
+                        {
+                          "columnId": "id",
+                          "label": "Resource Name"
+                        },
+                        {
+                          "columnId": "subscriptionId",
+                          "label": "Subscription"
+                        },
+                        {
+                          "columnId": "resourceGroup",
+                          "label": "Resource Group"
+                        },
+                        {
+                          "columnId": "location",
+                          "label": "Region"
+                        },
+                        {
+                          "columnId": "VM",
+                          "label": "Virtual Machine"
+                        },
+                        {
+                          "columnId": "privateEndPoint",
+                          "label": "Private End Point"
+                        },
+                        {
+                          "columnId": "properties",
+                          "label": "Details"
+                        }
+                      ]
+                    }
                   },
                   "name": "Orphan NICs"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type == \"microsoft.compute/virtualmachines\"\r\n| extend vmSize = tostring(properties.hardwareProfile.vmSize)\r\n| extend vmState = properties['extended']['instanceView']['powerState']['displayStatus']\r\n| where vmState == \"VM Stopped\"\r\n| project id, subscriptionId, resourceGroup, vmState, vmSize, location",
+                    "size": 0,
+                    "title": "Stopped VM",
+                    "noDataMessage": "No VM Stopped",
+                    "noDataMessageStyle": 3,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "subscriptionId",
+                          "formatter": 15,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": true
+                          }
+                        },
+                        {
+                          "columnMatch": "resourceGroup",
+                          "formatter": 14,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": false
+                          }
+                        },
+                        {
+                          "columnMatch": "id",
+                          "formatter": 13,
+                          "formatOptions": {
+                            "linkTarget": "Resource",
+                            "showIcon": true
+                          }
+                        },
+                        {
+                          "columnMatch": "vmSize",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "19.1429ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "location",
+                          "formatter": 17,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "108px"
+                          }
+                        }
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {
+                          "columnId": "id",
+                          "label": "Resource Name"
+                        },
+                        {
+                          "columnId": "subscriptionId",
+                          "label": "Subscription"
+                        },
+                        {
+                          "columnId": "resourceGroup",
+                          "label": "Resource Group"
+                        },
+                        {
+                          "columnId": "vmState",
+                          "label": "VM State"
+                        },
+                        {
+                          "columnId": "vmSize",
+                          "label": "VM Size"
+                        },
+                        {
+                          "columnId": "location",
+                          "label": "Region"
+                        }
+                      ]
+                    }
+                  },
+                  "name": "query - Stopped VM"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type == \"microsoft.compute/virtualmachines\"\r\n| extend vmSize = tostring(properties.hardwareProfile.vmSize)\r\n| extend vmState = properties['extended']['instanceView']['powerState']['displayStatus']\r\n| where vmState == \"VM deallocated\"\r\n| project id, subscriptionId, resourceGroup, vmState, vmSize, location",
+                    "size": 0,
+                    "title": "Deallocated VM",
+                    "noDataMessage": "No VM Deallocated",
+                    "noDataMessageStyle": 3,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "subscriptionId",
+                          "formatter": 15,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": true
+                          }
+                        },
+                        {
+                          "columnMatch": "resourceGroup",
+                          "formatter": 14,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": false
+                          }
+                        },
+                        {
+                          "columnMatch": "id",
+                          "formatter": 13,
+                          "formatOptions": {
+                            "linkTarget": "Resource",
+                            "showIcon": true
+                          }
+                        },
+                        {
+                          "columnMatch": "vmSize",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "19.1429ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "location",
+                          "formatter": 17,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "108px"
+                          }
+                        }
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {
+                          "columnId": "id",
+                          "label": "Resource Name"
+                        },
+                        {
+                          "columnId": "subscriptionId",
+                          "label": "Subscription"
+                        },
+                        {
+                          "columnId": "resourceGroup",
+                          "label": "Resource Group"
+                        },
+                        {
+                          "columnId": "vmState",
+                          "label": "VM State"
+                        },
+                        {
+                          "columnId": "vmSize",
+                          "label": "VM Size"
+                        },
+                        {
+                          "columnId": "location",
+                          "label": "Region"
+                        }
+                      ]
+                    }
+                  },
+                  "name": "query - Deallocated VM"
                 }
               ]
             },
@@ -900,6 +1333,88 @@
                     }
                   },
                   "name": "query - Networking Details - Unused PiPs"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type =~ 'Microsoft.Network/applicationGateways'\r\n| extend backendPoolsCount = array_length(properties.backendAddressPools),SKUName= tostring(properties.sku.name), SKUTier= tostring(properties.sku.tier),SKUCapacity=properties.sku.capacity,backendPools=properties.backendAddressPools\r\n| project id, name, SKUName, SKUTier, SKUCapacity\r\n| join (\r\n    resources\r\n    | where type =~ 'Microsoft.Network/applicationGateways'\r\n    | mvexpand backendPools = properties.backendAddressPools\r\n    | extend backendIPCount = array_length(backendPools.properties.backendIPConfigurations)\r\n    | extend backendAddressesCount = array_length(backendPools.properties.backendAddresses)\r\n    | extend backendPoolName  = backendPools.properties.backendAddressPools.name\r\n    | summarize backendIPCount = sum(backendIPCount) ,backendAddressesCount=sum(backendAddressesCount) by id\r\n) on id\r\n| project-away id1\r\n| where  (backendIPCount == 0 or isempty(backendIPCount)) and (backendAddressesCount==0 or isempty(backendAddressesCount))\r\n| order by id asc",
+                    "size": 0,
+                    "title": "Orphan Application Gateways",
+                    "noDataMessage": "No orphan App Gateways",
+                    "noDataMessageStyle": 3,
+                    "showExportToExcel": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ]
+                  },
+                  "name": "query - Orphan Application Gateways"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type == \"microsoft.network/loadbalancers\"\r\n//| where properties.backendAddressPools == \"[]\"\r\n| extend Details = pack_all()\r\n| project Resource=id, subscriptionId, resourceGroup, location, tostring(sku.name), Details",
+                    "size": 0,
+                    "title": "Orphan Load Balancers",
+                    "noDataMessage": "No orphan load balancers",
+                    "noDataMessageStyle": 3,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "subscriptionId",
+                          "formatter": 15,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": true
+                          }
+                        },
+                        {
+                          "columnMatch": "location",
+                          "formatter": 17
+                        },
+                        {
+                          "columnMatch": "Details",
+                          "formatter": 7,
+                          "formatOptions": {
+                            "linkTarget": "CellDetails",
+                            "linkLabel": "🔍 View Details",
+                            "linkIsContextBlade": true
+                          }
+                        }
+                      ],
+                      "labelSettings": [
+                        {
+                          "columnId": "Resource",
+                          "label": "Resource Name"
+                        },
+                        {
+                          "columnId": "subscriptionId",
+                          "label": "Subscription"
+                        },
+                        {
+                          "columnId": "resourceGroup",
+                          "label": "Resource Group"
+                        },
+                        {
+                          "columnId": "location",
+                          "label": "Region"
+                        },
+                        {
+                          "columnId": "sku_name",
+                          "label": "SKU"
+                        }
+                      ]
+                    }
+                  },
+                  "name": "query - Orphan Load Balancers"
                 }
               ]
             },
@@ -2236,7 +2751,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "securityresources\r\n| where type == \"microsoft.security/securescores\"\r\n| extend subscriptionSecureScore = round(100 * bin((todouble(properties.score.current))/ todouble(properties.score.max), 0.001))\r\n| where subscriptionSecureScore > 0\r\n| project subscriptionSecureScore, subscriptionId\r\n| order by subscriptionSecureScore asc",
+                    "query": "securityresources\r\n| where type == \"microsoft.security/securescores\"\r\n| extend subscriptionSecureScore = round(100 * bin((todouble(properties.score.current))/ todouble(properties.score.max), 0.001))\r\n| where subscriptionSecureScore > 0\r\n| project subscriptionId, subscriptionSecureScore\r\n| order by subscriptionSecureScore asc",
                     "size": 1,
                     "title": "Security Scores by Subscription",
                     "queryType": 1,
@@ -2246,14 +2761,6 @@
                     ],
                     "gridSettings": {
                       "formatters": [
-                        {
-                          "columnMatch": "$gen_group",
-                          "formatter": 13,
-                          "formatOptions": {
-                            "linkTarget": null,
-                            "showIcon": true
-                          }
-                        },
                         {
                           "columnMatch": "subscriptionSecureScore",
                           "formatter": 8,
@@ -2269,16 +2776,26 @@
                               "useGrouping": false
                             }
                           }
+                        },
+                        {
+                          "columnMatch": "subscriptionId",
+                          "formatter": 15,
+                          "formatOptions": {
+                            "linkTarget": "Resource",
+                            "showIcon": true
+                          }
                         }
                       ],
-                      "hierarchySettings": {
-                        "treeType": 1,
-                        "groupBy": [
-                          "subscriptionId"
-                        ],
-                        "expandTopLevel": true,
-                        "finalBy": "subscriptionSecureScore"
-                      }
+                      "labelSettings": [
+                        {
+                          "columnId": "subscriptionId",
+                          "label": "Subscription Name"
+                        },
+                        {
+                          "columnId": "subscriptionSecureScore",
+                          "label": "Subscription Secure Score"
+                        }
+                      ]
                     }
                   },
                   "name": "query - Monitor & Security - Security Scores"
@@ -2837,9 +3354,6 @@
                   "multiSelect": true,
                   "quote": "'",
                   "delimiter": ",",
-                  "value": [
-                    "value::all"
-                  ],
                   "typeSettings": {
                     "additionalResourceOptions": [
                       "value::all"
@@ -4394,9 +4908,6 @@
                   "multiSelect": true,
                   "quote": "'",
                   "delimiter": ",",
-                  "value": [
-                    "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
-                  ],
                   "typeSettings": {
                     "additionalResourceOptions": [
                       "value::all"
@@ -4406,7 +4917,10 @@
                   },
                   "timeContext": {
                     "durationMs": 86400000
-                  }
+                  },
+                  "value": [
+                    "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
+                  ]
                 },
                 {
                   "id": "4168a8b2-a522-4f0d-9575-893d70d9239d",
@@ -5568,6 +6082,273 @@
         "value": "Policies"
       },
       "name": "Policies"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "parameters": [
+                {
+                  "id": "e15ef842-dadb-4a7b-b5f6-5d1bbe35b7af",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Subscription",
+                  "type": 6,
+                  "description": "Cost information can only be displayed per subscription",
+                  "isRequired": true,
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "includeAll": false,
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "value": "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
+                },
+                {
+                  "id": "b73ef334-95b2-4ead-8dd2-51a90a90ce6f",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Aggregation",
+                  "type": 2,
+                  "isRequired": true,
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "jsonData": "[\r\n    { \"value\": \"SubscriptionId\", \"label\": \"Subscription\", \"selected\":true},\r\n    { \"value\": \"ResourceGroup\", \"label\": \"Resource Group\"},\r\n    { \"value\": \"ResourceType\", \"label\": \"Resource Type\"}\r\n]",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "value": "ResourceType"
+                },
+                {
+                  "id": "55ef4a45-0603-48cf-bb9b-a963e7a33be2",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "TimeFrame",
+                  "type": 2,
+                  "typeSettings": {
+                    "additionalResourceOptions": []
+                  },
+                  "jsonData": "[\r\n { \"value\": \"BillingMonthToDate\", \"label\": \"Billing MonthToDate\"},\r\n { \"value\": \"MonthToDate\", \"label\": \"MonthToDate\", \"selected\":true },\r\n { \"value\": \"TheLastBillingMonth\", \"label\": \"Last Billing Month\"},\r\n { \"value\": \"TheLastMonth\", \"label\": \"Last Month\"},\r\n { \"value\": \"WeekToDate\", \"label\": \"WeekToDate\"}\r\n]",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                }
+              ],
+              "style": "above",
+              "doNotRunWhenHidden": true,
+              "queryType": 0,
+              "resourceType": "microsoft.resourcegraph/resources"
+            },
+            "name": "parameters - Cost Subscription"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "{\"version\":\"ARMEndpoint/1.0\",\"data\":\" {\\r\\n   \\\"type\\\": \\\"Usage\\\",\\r\\n   \\\"timeframe\\\": \\\"{TimeFrame}\\\",\\r\\n   \\\"dataset\\\": {\\r\\n     \\\"granularity\\\": \\\"None\\\",\\r\\n     \\\"aggregation\\\": {\\r\\n       \\\"totalCost\\\": {\\r\\n         \\\"name\\\": \\\"PreTaxCost\\\",\\r\\n         \\\"function\\\": \\\"Sum\\\"\\r\\n       }\\r\\n     },\\r\\n     \\\"grouping\\\": [\\r\\n       {\\r\\n         \\\"type\\\": \\\"Dimension\\\",\\r\\n         \\\"name\\\": \\\"{Aggregation}\\\"\\r\\n       }\\r\\n     ]\\r\\n   }\\r\\n }\",\"headers\":[],\"method\":\"POST\",\"path\":\"/subscriptions/{Subscription:id}/providers/Microsoft.CostManagement/query?\",\"urlParams\":[{\"key\":\"api-version\",\"value\":\"2019-11-01\"}],\"batchDisabled\":true,\"transformers\":[{\"type\":\"jsonpath\",\"settings\":{\"tablePath\":\"$.properties\",\"columns\":[]}}]}",
+              "size": 0,
+              "title": "Overall Cost",
+              "showExportToExcel": true,
+              "queryType": 12,
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "PreTaxCost",
+                    "formatter": 0,
+                    "numberFormat": {
+                      "unit": 0,
+                      "options": {
+                        "style": "decimal",
+                        "useGrouping": true,
+                        "maximumFractionDigits": 2
+                      },
+                      "emptyValCustomText": "\"0\""
+                    }
+                  },
+                  {
+                    "columnMatch": "ResourceGroup",
+                    "formatter": 14,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "showIcon": false
+                    }
+                  },
+                  {
+                    "columnMatch": "SubscriptionId",
+                    "formatter": 15,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "ResourceType",
+                    "formatter": 16,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "resourceGroup",
+                    "formatter": 14,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": false,
+                      "showIcon": false
+                    }
+                  }
+                ],
+                "filter": true,
+                "sortBy": [
+                  {
+                    "itemKey": "$gen_number_PreTaxCost_0",
+                    "sortOrder": 2
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "PreTaxCost",
+                    "label": "Cost"
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "$gen_number_PreTaxCost_0",
+                  "sortOrder": 2
+                }
+              ],
+              "tileSettings": {
+                "showBorder": false
+              }
+            },
+            "name": "query - Sub Cost"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "parameters": [
+                {
+                  "id": "6cc7fc26-1a56-41cb-ad43-301e0f9f8903",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Environment",
+                  "type": 2,
+                  "multiSelect": true,
+                  "quote": "\"",
+                  "delimiter": ",",
+                  "query": "resources | distinct tostring(tags.Env)\r\n| where tags_Env != \"\"",
+                  "crossComponentResources": [
+                    "{Subscription}"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources",
+                  "value": [
+                    "Dev"
+                  ]
+                }
+              ],
+              "style": "above",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            },
+            "name": "parameters - Environment"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "{\"version\":\"ARMEndpoint/1.0\",\"data\":\" {\\r\\n   \\\"type\\\": \\\"Usage\\\",\\r\\n   \\\"timeframe\\\": \\\"{TimeFrame}\\\",\\r\\n   \\\"dataset\\\": {\\r\\n     \\\"granularity\\\": \\\"None\\\",\\r\\n     \\\"filter\\\": {\\r\\n                 \\\"tags\\\" : {\\r\\n                     \\\"name\\\" : \\\"Env\\\",\\r\\n                     \\\"operator\\\" : \\\"In\\\",\\r\\n                     \\\"values\\\" : [\\r\\n                        {Environment}\\r\\n                     ]\\r\\n                 }\\r\\n     },\\r\\n     \\\"aggregation\\\": {\\r\\n       \\\"totalCost\\\": {\\r\\n         \\\"name\\\": \\\"PreTaxCost\\\",\\r\\n         \\\"function\\\": \\\"Sum\\\"\\r\\n       }\\r\\n     },\\r\\n     \\\"grouping\\\": [\\r\\n       {\\r\\n         \\\"type\\\": \\\"Dimension\\\",\\r\\n         \\\"name\\\": \\\"{Aggregation}\\\"\\r\\n       }\\r\\n     ]\\r\\n   }\\r\\n }\",\"headers\":[],\"method\":\"POST\",\"path\":\"/subscriptions/{Subscription:id}/providers/Microsoft.CostManagement/query?\",\"urlParams\":[{\"key\":\"api-version\",\"value\":\"2019-11-01\"}],\"batchDisabled\":true,\"transformers\":[{\"type\":\"jsonpath\",\"settings\":{\"tablePath\":\"$.properties\",\"columns\":[]}}]}",
+              "size": 3,
+              "title": "Overall Cost Filtered by Tag",
+              "showExportToExcel": true,
+              "queryType": 12,
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "PreTaxCost",
+                    "formatter": 0,
+                    "numberFormat": {
+                      "unit": 0,
+                      "options": {
+                        "style": "decimal",
+                        "useGrouping": true,
+                        "maximumFractionDigits": 2
+                      },
+                      "emptyValCustomText": "\"0\""
+                    }
+                  },
+                  {
+                    "columnMatch": "SubscriptionId",
+                    "formatter": 15,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "ResourceType",
+                    "formatter": 16,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "resourceGroup",
+                    "formatter": 14,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": false,
+                      "showIcon": true
+                    }
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "PreTaxCost",
+                    "label": "Cost"
+                  }
+                ]
+              },
+              "tileSettings": {
+                "showBorder": false
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "Environment",
+              "comparison": "isNotEqualTo",
+              "value": ""
+            },
+            "name": "query - Sub Cost Per Tag"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "SelectedTab",
+        "comparison": "isEqualTo",
+        "value": "Cost"
+      },
+      "name": "group - Cost Management"
     }
   ],
   "fallbackResourceIds": [

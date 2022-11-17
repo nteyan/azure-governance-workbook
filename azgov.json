@@ -574,6 +574,56 @@
                     }
                   },
                   "name": "query - Untagged Resources"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "{\"version\":\"ARMEndpoint/1.0\",\"data\":null,\"headers\":[],\"method\":\"GET\",\"path\":\"/subscriptions/{Subscription:id}/resources?\",\"urlParams\":[{\"key\":\"api-version\",\"value\":\"2021-04-01\"},{\"key\":\"$expand\",\"value\":\"createdTime\"}],\"batchDisabled\":true,\"transformers\":[{\"type\":\"jsonpath\",\"settings\":{\"tablePath\":\"$.value\",\"columns\":[{\"path\":\"$..id\",\"columnid\":\"id\",\"columnType\":\"string\"},{\"path\":\"$..type\",\"columnid\":\"type\",\"columnType\":\"string\"},{\"path\":\"$..location\",\"columnid\":\"location\",\"columnType\":\"string\"},{\"path\":\"$..createdTime\",\"columnid\":\"createdTime\",\"columnType\":\"datetime\"}]}}]}",
+                    "size": 0,
+                    "title": "Resource Age",
+                    "showExportToExcel": true,
+                    "queryType": 12,
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "type",
+                          "formatter": 16,
+                          "formatOptions": {
+                            "showIcon": true
+                          }
+                        },
+                        {
+                          "columnMatch": "location",
+                          "formatter": 17
+                        },
+                        {
+                          "columnMatch": "createdTime",
+                          "formatter": 6
+                        }
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {
+                          "columnId": "id",
+                          "label": "Resource Name"
+                        },
+                        {
+                          "columnId": "type",
+                          "label": "Resource Type"
+                        },
+                        {
+                          "columnId": "location",
+                          "label": "Region"
+                        },
+                        {
+                          "columnId": "createdTime",
+                          "label": "Created Time"
+                        }
+                      ]
+                    }
+                  },
+                  "name": "query - Resource Age"
                 }
               ]
             },
@@ -2762,12 +2812,22 @@
                     "gridSettings": {
                       "formatters": [
                         {
+                          "columnMatch": "subscriptionId",
+                          "formatter": 15,
+                          "formatOptions": {
+                            "linkTarget": "Resource",
+                            "showIcon": true,
+                            "customColumnWidthSetting": "65ch"
+                          }
+                        },
+                        {
                           "columnMatch": "subscriptionSecureScore",
                           "formatter": 8,
                           "formatOptions": {
                             "min": 0,
                             "max": 100,
-                            "palette": "redGreen"
+                            "palette": "redGreen",
+                            "customColumnWidthSetting": "55ch"
                           },
                           "numberFormat": {
                             "unit": 1,
@@ -2775,14 +2835,6 @@
                               "style": "decimal",
                               "useGrouping": false
                             }
-                          }
-                        },
-                        {
-                          "columnMatch": "subscriptionId",
-                          "formatter": 15,
-                          "formatOptions": {
-                            "linkTarget": "Resource",
-                            "showIcon": true
                           }
                         }
                       ],
@@ -2820,7 +2872,7 @@
                           "formatOptions": {
                             "linkTarget": null,
                             "showIcon": true,
-                            "customColumnWidthSetting": "45ch"
+                            "customColumnWidthSetting": "65ch"
                           }
                         },
                         {
@@ -2832,14 +2884,16 @@
                           "formatter": 8,
                           "formatOptions": {
                             "min": 0,
-                            "palette": "greenRed"
+                            "palette": "greenRed",
+                            "customColumnWidthSetting": "20ch"
                           }
                         },
                         {
                           "columnMatch": "currentscore",
                           "formatter": 8,
                           "formatOptions": {
-                            "palette": "redGreen"
+                            "palette": "redGreen",
+                            "customColumnWidthSetting": "20ch"
                           },
                           "numberFormat": {
                             "unit": 1,
@@ -2852,7 +2906,14 @@
                           "columnMatch": "maxscore",
                           "formatter": 8,
                           "formatOptions": {
-                            "palette": "blue"
+                            "palette": "blue",
+                            "customColumnWidthSetting": "20ch"
+                          },
+                          "numberFormat": {
+                            "unit": 1,
+                            "options": {
+                              "style": "decimal"
+                            }
                           }
                         },
                         {
@@ -2865,7 +2926,8 @@
                           "formatOptions": {
                             "min": 0,
                             "max": 100,
-                            "palette": "redGreen"
+                            "palette": "redGreen",
+                            "customColumnWidthSetting": "20"
                           },
                           "numberFormat": {
                             "unit": 1,
@@ -2883,7 +2945,29 @@
                         ],
                         "expandTopLevel": true,
                         "finalBy": "SecureControl"
-                      }
+                      },
+                      "labelSettings": [
+                        {
+                          "columnId": "SecureControl",
+                          "label": "Secure Control"
+                        },
+                        {
+                          "columnId": "unhealthy",
+                          "label": "Unhealthy"
+                        },
+                        {
+                          "columnId": "currentscore",
+                          "label": "Current Score"
+                        },
+                        {
+                          "columnId": "maxscore",
+                          "label": "Max Score"
+                        },
+                        {
+                          "columnId": "subscriptionId",
+                          "label": "Subscription"
+                        }
+                      ]
                     }
                   },
                   "name": "query - Monitor & Security - Security Scores by Control"
@@ -3112,7 +3196,7 @@
               "queryType": 0,
               "resourceType": "microsoft.resources/subscriptions",
               "crossComponentResources": [
-                "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
+                ""
               ],
               "visualization": "piechart",
               "tileSettings": {
@@ -3172,7 +3256,7 @@
               "queryType": 0,
               "resourceType": "microsoft.resources/subscriptions",
               "crossComponentResources": [
-                "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
+                ""
               ],
               "visualization": "piechart",
               "tileSettings": {
@@ -3232,7 +3316,7 @@
               "queryType": 0,
               "resourceType": "microsoft.resources/subscriptions",
               "crossComponentResources": [
-                "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
+                ""
               ],
               "visualization": "piechart",
               "tileSettings": {
@@ -3292,7 +3376,7 @@
               "queryType": 0,
               "resourceType": "microsoft.resources/subscriptions",
               "crossComponentResources": [
-                "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
+                ""
               ],
               "gridSettings": {
                 "formatters": [
@@ -4919,7 +5003,7 @@
                     "durationMs": 86400000
                   },
                   "value": [
-                    "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
+                    ""
                   ]
                 },
                 {
@@ -6112,7 +6196,7 @@
                   "timeContext": {
                     "durationMs": 86400000
                   },
-                  "value": "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
+                  "value": ""
                 },
                 {
                   "id": "b73ef334-95b2-4ead-8dd2-51a90a90ce6f",

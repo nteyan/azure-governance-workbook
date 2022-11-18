@@ -1,5 +1,5 @@
 # Azure Governance Workbook
-![AzureWorkbook](/images/govworkbok1.png)
+![AzureWorkbook](/images/govworkbook1.png)
 ## Azure Workbooks
 Workbooks provide a flexible canvas for data analysis and the creation of rich visual reports within the Azure portal. They allow you to tap into multiple data sources from across Azure and combine them into unified interactive experiences. Workbooks let you combine multiple kinds of visualizations and analyses, making them great for freeform exploration.
 

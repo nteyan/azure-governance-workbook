@@ -1054,7 +1054,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources\r\n| where type == \"microsoft.compute/virtualmachines\"\r\n| extend vmSize = tostring(properties.hardwareProfile.vmSize)\r\n| extend vmState = properties['extended']['instanceView']['powerState']['displayStatus']\r\n| where vmState == \"VM Stopped\"\r\n| project id, subscriptionId, resourceGroup, vmState, vmSize, location",
+                    "query": "resources\r\n| where type == \"microsoft.compute/virtualmachines\"\r\n| extend vmSize = tostring(properties.hardwareProfile.vmSize)\r\n| extend vmState = properties['extended']['instanceView']['powerState']['displayStatus']\r\n| where vmState == \"VM stopped\"\r\n| project id, subscriptionId, resourceGroup, vmState, vmSize, location",
                     "size": 0,
                     "title": "Stopped VM",
                     "noDataMessage": "No VM Stopped",
@@ -3196,7 +3196,7 @@
               "queryType": 0,
               "resourceType": "microsoft.resources/subscriptions",
               "crossComponentResources": [
-                ""
+                "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
               ],
               "visualization": "piechart",
               "tileSettings": {
@@ -3256,7 +3256,7 @@
               "queryType": 0,
               "resourceType": "microsoft.resources/subscriptions",
               "crossComponentResources": [
-                ""
+                "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
               ],
               "visualization": "piechart",
               "tileSettings": {
@@ -3316,7 +3316,7 @@
               "queryType": 0,
               "resourceType": "microsoft.resources/subscriptions",
               "crossComponentResources": [
-                ""
+                "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
               ],
               "visualization": "piechart",
               "tileSettings": {
@@ -3376,7 +3376,7 @@
               "queryType": 0,
               "resourceType": "microsoft.resources/subscriptions",
               "crossComponentResources": [
-                ""
+                "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
               ],
               "gridSettings": {
                 "formatters": [
@@ -5003,7 +5003,7 @@
                     "durationMs": 86400000
                   },
                   "value": [
-                    ""
+                    "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
                   ]
                 },
                 {
@@ -6196,7 +6196,7 @@
                   "timeContext": {
                     "durationMs": 86400000
                   },
-                  "value": ""
+                  "value": "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
                 },
                 {
                   "id": "b73ef334-95b2-4ead-8dd2-51a90a90ce6f",

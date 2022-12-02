@@ -1051,99 +1051,55 @@
                   "name": "Orphan NICs"
                 },
                 {
-                  "type": 3,
+                  "type": 1,
                   "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources\r\n| where type == \"microsoft.compute/virtualmachines\"\r\n| extend vmSize = tostring(properties.hardwareProfile.vmSize)\r\n| extend vmState = properties['extended']['instanceView']['powerState']['displayStatus']\r\n| where vmState == \"VM stopped\"\r\n| project id, subscriptionId, resourceGroup, vmState, vmSize, location",
-                    "size": 0,
-                    "title": "Stopped VM",
-                    "noDataMessage": "No VM Stopped",
-                    "noDataMessageStyle": 3,
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
+                    "json": "States and billing status of Azure Virtual Machines : https://learn.microsoft.com/en-us/azure/virtual-machines/states-billing",
+                    "style": "info"
+                  },
+                  "name": "text - 11"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
                     "crossComponentResources": [
                       "{Subscription}"
                     ],
-                    "gridSettings": {
-                      "formatters": [
-                        {
-                          "columnMatch": "subscriptionId",
-                          "formatter": 15,
-                          "formatOptions": {
-                            "linkTarget": null,
-                            "showIcon": true
-                          }
+                    "parameters": [
+                      {
+                        "id": "98d786aa-8835-493f-9fe4-fe5da150392b",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "VMState",
+                        "label": "Virtual Machine State",
+                        "type": 2,
+                        "query": "resources\r\n| where type == \"microsoft.compute/virtualmachines\"\r\n| extend state = properties['extended']['instanceView']['powerState']['displayStatus']\r\n| project state",
+                        "crossComponentResources": [
+                          "{Subscription}"
+                        ],
+                        "typeSettings": {
+                          "additionalResourceOptions": []
                         },
-                        {
-                          "columnMatch": "resourceGroup",
-                          "formatter": 14,
-                          "formatOptions": {
-                            "linkTarget": null,
-                            "showIcon": false
-                          }
+                        "timeContext": {
+                          "durationMs": 86400000
                         },
-                        {
-                          "columnMatch": "id",
-                          "formatter": 13,
-                          "formatOptions": {
-                            "linkTarget": "Resource",
-                            "showIcon": true
-                          }
-                        },
-                        {
-                          "columnMatch": "vmSize",
-                          "formatter": 0,
-                          "formatOptions": {
-                            "customColumnWidthSetting": "19.1429ch"
-                          }
-                        },
-                        {
-                          "columnMatch": "location",
-                          "formatter": 17,
-                          "formatOptions": {
-                            "customColumnWidthSetting": "108px"
-                          }
-                        }
-                      ],
-                      "filter": true,
-                      "labelSettings": [
-                        {
-                          "columnId": "id",
-                          "label": "Resource Name"
-                        },
-                        {
-                          "columnId": "subscriptionId",
-                          "label": "Subscription"
-                        },
-                        {
-                          "columnId": "resourceGroup",
-                          "label": "Resource Group"
-                        },
-                        {
-                          "columnId": "vmState",
-                          "label": "VM State"
-                        },
-                        {
-                          "columnId": "vmSize",
-                          "label": "VM Size"
-                        },
-                        {
-                          "columnId": "location",
-                          "label": "Region"
-                        }
-                      ]
-                    }
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources",
+                        "value": "VM deallocated"
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources"
                   },
-                  "name": "query - Stopped VM"
+                  "name": "parameters - 11"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources\r\n| where type == \"microsoft.compute/virtualmachines\"\r\n| extend vmSize = tostring(properties.hardwareProfile.vmSize)\r\n| extend vmState = properties['extended']['instanceView']['powerState']['displayStatus']\r\n| where vmState == \"VM deallocated\"\r\n| project id, subscriptionId, resourceGroup, vmState, vmSize, location",
+                    "query": "resources\r\n| where type == \"microsoft.compute/virtualmachines\"\r\n| extend vmSize = tostring(properties.hardwareProfile.vmSize)\r\n| extend vmState = properties['extended']['instanceView']['powerState']['displayStatus']\r\n| where vmState == '{VMState}'\r\n| project id, subscriptionId, resourceGroup, vmState, vmSize, location",
                     "size": 0,
-                    "title": "Deallocated VM",
-                    "noDataMessage": "No VM Deallocated",
+                    "title": "Virtual Machine List by Powerstate",
                     "noDataMessageStyle": 3,
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
@@ -1220,7 +1176,7 @@
                       ]
                     }
                   },
-                  "name": "query - Deallocated VM"
+                  "name": "query - VM List by State"
                 }
               ]
             },

@@ -1072,12 +1072,13 @@
                         "name": "VMState",
                         "label": "Virtual Machine State",
                         "type": 2,
-                        "query": "resources\r\n| where type == \"microsoft.compute/virtualmachines\"\r\n| extend state = properties['extended']['instanceView']['powerState']['displayStatus']\r\n| project state",
+                        "query": "resources\r\n| where type == \"microsoft.compute/virtualmachines\"\r\n| extend state = properties['extended']['instanceView']['powerState']['displayStatus']\r\n| summarize by tostring(state)",
                         "crossComponentResources": [
                           "{Subscription}"
                         ],
                         "typeSettings": {
-                          "additionalResourceOptions": []
+                          "additionalResourceOptions": [],
+                          "showDefault": false
                         },
                         "timeContext": {
                           "durationMs": 86400000
@@ -6392,7 +6393,7 @@
     }
   ],
   "fallbackResourceIds": [
-    "azure monitor"
+    "Azure Monitor"
   ],
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
 }

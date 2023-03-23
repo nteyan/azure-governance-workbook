@@ -11,7 +11,7 @@
             "id": "3dca9244-a24d-4cae-a9a2-153222573132",
             "cellValue": "SelectedTab",
             "linkTarget": "parameter",
-            "linkLabel": "Resource Consistency",
+            "linkLabel": "Resource Management",
             "subTarget": "Consistency",
             "preText": "General",
             "style": "link"
@@ -157,6 +157,22 @@
                   "linkTarget": "parameter",
                   "linkLabel": "Backup",
                   "subTarget": "RC_Backup",
+                  "style": "link"
+                },
+                {
+                  "id": "e40dbf66-2abe-4bcf-acd7-1ee6d8fc950b",
+                  "cellValue": "SelectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Resource Age",
+                  "subTarget": "RC_Age",
+                  "style": "link"
+                },
+                {
+                  "id": "e112c6e1-db5e-4b0e-99e9-2edac0eba177",
+                  "cellValue": "SelectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Tag Explorer",
+                  "subTarget": "RC_Tag",
                   "style": "link"
                 }
               ]
@@ -574,56 +590,6 @@
                     }
                   },
                   "name": "query - Untagged Resources"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "{\"version\":\"ARMEndpoint/1.0\",\"data\":null,\"headers\":[],\"method\":\"GET\",\"path\":\"/subscriptions/{Subscription:id}/resources?\",\"urlParams\":[{\"key\":\"api-version\",\"value\":\"2021-04-01\"},{\"key\":\"$expand\",\"value\":\"createdTime\"}],\"batchDisabled\":true,\"transformers\":[{\"type\":\"jsonpath\",\"settings\":{\"tablePath\":\"$.value\",\"columns\":[{\"path\":\"$..id\",\"columnid\":\"id\",\"columnType\":\"string\"},{\"path\":\"$..type\",\"columnid\":\"type\",\"columnType\":\"string\"},{\"path\":\"$..location\",\"columnid\":\"location\",\"columnType\":\"string\"},{\"path\":\"$..createdTime\",\"columnid\":\"createdTime\",\"columnType\":\"datetime\"}]}}]}",
-                    "size": 0,
-                    "title": "Resource Age",
-                    "showExportToExcel": true,
-                    "queryType": 12,
-                    "gridSettings": {
-                      "formatters": [
-                        {
-                          "columnMatch": "type",
-                          "formatter": 16,
-                          "formatOptions": {
-                            "showIcon": true
-                          }
-                        },
-                        {
-                          "columnMatch": "location",
-                          "formatter": 17
-                        },
-                        {
-                          "columnMatch": "createdTime",
-                          "formatter": 6
-                        }
-                      ],
-                      "filter": true,
-                      "labelSettings": [
-                        {
-                          "columnId": "id",
-                          "label": "Resource Name"
-                        },
-                        {
-                          "columnId": "type",
-                          "label": "Resource Type"
-                        },
-                        {
-                          "columnId": "location",
-                          "label": "Region"
-                        },
-                        {
-                          "columnId": "createdTime",
-                          "label": "Created Time"
-                        }
-                      ]
-                    }
-                  },
-                  "name": "query - Resource Age"
                 }
               ]
             },
@@ -1085,7 +1051,7 @@
                         },
                         "queryType": 1,
                         "resourceType": "microsoft.resourcegraph/resources",
-                        "value": "VM deallocated"
+                        "value": null
                       }
                     ],
                     "style": "pills",
@@ -1443,7 +1409,7 @@
                   "content": {
                     "version": "KqlItem/1.0",
                     "query": "servicehealthresources\r\n| where type =~ 'Microsoft.ResourceHealth/events'\r\n| extend eventType = properties.EventType, status = properties.Status, description = properties.Title, trackingId = properties.TrackingId, summary = properties.Summary, priority = properties.Priority, impactStartTime = properties.ImpactStartTime, impactMitigationTime = properties.ImpactMitigationTime\r\n| where properties.Status == 'Active' and tolong(impactStartTime) > 1\r\n\r\n| extend Details = pack_all()\r\n| project ServiceHealthID=id, Description=description, Region=location, eventType, Status=status, Details",
-                    "size": 3,
+                    "size": 1,
                     "title": "All active Service Health events",
                     "showExportToExcel": true,
                     "queryType": 1,
@@ -1486,8 +1452,7 @@
                             "linkIsContextBlade": true
                           }
                         }
-                      ],
-                      "rowLimit": 10
+                      ]
                     },
                     "tileSettings": {
                       "showBorder": false
@@ -2813,7 +2778,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "SecurityResources \r\n| where type == 'microsoft.security/securescores/securescorecontrols' \r\n| extend SecureControl = properties.displayName, unhealthy = properties.unhealthyResourceCount, currentscore = properties.score.current, maxscore = properties.score.max, subscriptionId\r\n| project SecureControl , unhealthy, currentscore, maxscore, subscriptionId",
+                    "query": "SecurityResources \r\n| where type == 'microsoft.security/securescores/securescorecontrols' \r\n| extend SecureControl = properties.displayName, unhealthy = properties.unhealthyResourceCount, currentscore = properties.score.current, maxscore = properties.score.max, subscriptionId, details = properties\r\n| project SecureControl , unhealthy, currentscore, maxscore, subscriptionId, details",
                     "size": 3,
                     "title": "Security Scores by Control",
                     "queryType": 1,
@@ -2833,8 +2798,18 @@
                           }
                         },
                         {
+                          "columnMatch": "Subscription",
+                          "formatter": 13,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": true,
+                            "customColumnWidthSetting": "65ch"
+                          }
+                        },
+                        {
                           "columnMatch": "SecureControl",
-                          "formatter": 5
+                          "formatter": 5,
+                          "tooltipFormat": {}
                         },
                         {
                           "columnMatch": "unhealthy",
@@ -2878,6 +2853,15 @@
                           "formatter": 5
                         },
                         {
+                          "columnMatch": "details",
+                          "formatter": 7,
+                          "formatOptions": {
+                            "linkTarget": "CellDetails",
+                            "linkLabel": "Details",
+                            "linkIsContextBlade": true
+                          }
+                        },
+                        {
                           "columnMatch": "subscriptionSecureScore",
                           "formatter": 8,
                           "formatOptions": {
@@ -2904,10 +2888,6 @@
                         "finalBy": "SecureControl"
                       },
                       "labelSettings": [
-                        {
-                          "columnId": "SecureControl",
-                          "label": "Secure Control"
-                        },
                         {
                           "columnId": "unhealthy",
                           "label": "Unhealthy"
@@ -2937,6 +2917,296 @@
               "value": "RC_Security"
             },
             "name": "group - Security"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "1e6e4cc7-5d76-48ef-8ce1-16f33f4f6dea",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "SubscriptionAge",
+                        "label": "Subscription Name",
+                        "type": 6,
+                        "isRequired": true,
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "includeAll": true,
+                          "showDefault": false
+                        },
+                        "timeContext": {
+                          "durationMs": 86400000
+                        },
+                        "value": "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
+                      }
+                    ],
+                    "style": "formVertical",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "name": "parameters - 10"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "{\"version\":\"ARMEndpoint/1.0\",\"data\":null,\"headers\":[],\"method\":\"GET\",\"path\":\"/subscriptions/{SubscriptionAge:id}/resources?\",\"urlParams\":[{\"key\":\"api-version\",\"value\":\"2021-04-01\"},{\"key\":\"$expand\",\"value\":\"createdTime,changedTime,provisioningState\"}],\"batchDisabled\":true,\"transformers\":[{\"type\":\"jsonpath\",\"settings\":{\"tablePath\":\"$.value\",\"columns\":[{\"path\":\"$..id\",\"columnid\":\"id\",\"columnType\":\"string\"},{\"path\":\"$..type\",\"columnid\":\"type\",\"columnType\":\"string\"},{\"path\":\"$..location\",\"columnid\":\"location\",\"columnType\":\"string\"},{\"path\":\"$..createdTime\",\"columnid\":\"createdTime\",\"columnType\":\"datetime\"},{\"path\":\"$..changedTime\",\"columnid\":\"changedTime\",\"columnType\":\"datetime\"},{\"path\":\"$..provisioningState\",\"columnid\":\"provisioningState\",\"columnType\":\"string\"},{\"path\":\"$..tags\",\"columnid\":\"tags\"}]}}]}",
+                    "size": 0,
+                    "title": "Resource Age",
+                    "showExportToExcel": true,
+                    "queryType": 12,
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "type",
+                          "formatter": 16,
+                          "formatOptions": {
+                            "showIcon": true
+                          }
+                        },
+                        {
+                          "columnMatch": "location",
+                          "formatter": 17
+                        },
+                        {
+                          "columnMatch": "createdTime",
+                          "formatter": 6
+                        },
+                        {
+                          "columnMatch": "changedTime",
+                          "formatter": 6
+                        },
+                        {
+                          "columnMatch": "provisioningState",
+                          "formatter": 1
+                        },
+                        {
+                          "columnMatch": "tags",
+                          "formatter": 1
+                        }
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {
+                          "columnId": "id",
+                          "label": "Resource Name"
+                        },
+                        {
+                          "columnId": "type",
+                          "label": "Resource Type"
+                        },
+                        {
+                          "columnId": "location",
+                          "label": "Region"
+                        },
+                        {
+                          "columnId": "createdTime",
+                          "label": "Created Time"
+                        },
+                        {
+                          "columnId": "changedTime",
+                          "label": "Last Change"
+                        },
+                        {
+                          "columnId": "provisioningState",
+                          "label": "Provisioning State"
+                        },
+                        {
+                          "columnId": "tags",
+                          "label": "Tags"
+                        }
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {
+                    "parameterName": "SubscriptionAge",
+                    "comparison": "isNotEqualTo"
+                  },
+                  "name": "query - Resource Age"
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "SelectedTab",
+              "comparison": "isEqualTo",
+              "value": "RC_Age"
+            },
+            "name": "Resource Age"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "parameters": [
+                      {
+                        "id": "bae67738-90ef-4698-9020-5e1f91d67f82",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "TagName",
+                        "label": "Tag Name",
+                        "type": 2,
+                        "isRequired": true,
+                        "query": "Resources\r\n| where tags != '' and tags != '[]'\r\n| mvexpand tags\r\n| extend tagName = tostring(bag_keys(tags)[0])\r\n| distinct tagName\r\n| sort by tagName asc\r\n",
+                        "crossComponentResources": [
+                          "{Subscription}"
+                        ],
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "timeContext": {
+                          "durationMs": 86400000
+                        },
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources",
+                        "value": "Env"
+                      }
+                    ],
+                    "style": "formVertical",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources"
+                  },
+                  "customWidth": "50",
+                  "name": "parameters - 0"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "parameters": [
+                      {
+                        "id": "cb0ae78d-a49b-457b-baed-d83c97a2c934",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "TagValue",
+                        "label": "Tag Value",
+                        "type": 2,
+                        "query": "Resources\r\n| extend TagValue = tostring(tags.{TagName})\r\n| project TagValue\r\n| distinct TagValue",
+                        "crossComponentResources": [
+                          "{Subscription}"
+                        ],
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "timeContext": {
+                          "durationMs": 86400000
+                        },
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources",
+                        "value": "Dev"
+                      }
+                    ],
+                    "style": "formVertical",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources"
+                  },
+                  "customWidth": "50",
+                  "name": "parameters - 2"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "Resources\r\n| extend tag = tags.{TagName}\r\n| mv-expand bagexpansion=array tags\r\n| where isnotempty(tags)\r\n| where tags[0] =~ '{TagName}' and tags[1] =~ '{TagValue}'\r\n| project id, type, tag",
+                    "size": 0,
+                    "title": "Resource with Tag",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "gridSettings": {
+                      "labelSettings": [
+                        {
+                          "columnId": "id",
+                          "label": "Resource Name"
+                        },
+                        {
+                          "columnId": "type",
+                          "label": "Resource Type"
+                        },
+                        {
+                          "columnId": "tag",
+                          "label": "Tag Value"
+                        }
+                      ]
+                    }
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {
+                    "parameterName": "TagName",
+                    "comparison": "isNotEqualTo"
+                  },
+                  "name": "Tag Explorer"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "Resources\r\n| extend tag = tags.{TagName}\r\n| mv-expand bagexpansion=array tags\r\n| where isnotempty(tags)\r\n| where tags[0] =~ '{TagName}' and tags[1] =~ ''\r\n| project id, type, tag",
+                    "size": 0,
+                    "title": "Empty Value",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "gridSettings": {
+                      "labelSettings": [
+                        {
+                          "columnId": "id",
+                          "label": "Resource Name"
+                        },
+                        {
+                          "columnId": "type",
+                          "label": "Resource Type"
+                        },
+                        {
+                          "columnId": "tag",
+                          "label": "Tag Value"
+                        }
+                      ]
+                    }
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "TagName",
+                      "comparison": "isNotEqualTo"
+                    },
+                    {
+                      "parameterName": "TagValue",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
+                  "name": "Empty Value"
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "SelectedTab",
+              "comparison": "isEqualTo",
+              "value": "RC_Tag"
+            },
+            "name": "Tag Explorer"
           }
         ]
       },
@@ -6393,7 +6663,7 @@
     }
   ],
   "fallbackResourceIds": [
-    "Azure Monitor"
+    "azure monitor"
   ],
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
 }

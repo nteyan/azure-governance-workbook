@@ -156,7 +156,9 @@
                     "value::tenant"
                   ],
                   "typeSettings": {
-                    "additionalResourceOptions": [],
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
                     "showDefault": false
                   },
                   "timeContext": {
@@ -2092,7 +2094,7 @@
                         "timeContext": {
                           "durationMs": 86400000
                         },
-                        "value": null
+                        "value": "microsoft.resourcegraph/queries"
                       }
                     ],
                     "style": "formVertical",
@@ -2211,6 +2213,72 @@
                   },
                   "customWidth": "33",
                   "name": "query - Untagged Resources"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resourcecontainers\r\n| where type == \"microsoft.resources/subscriptions\"\r\n| extend tag = tags.{TagName}\r\n| mv-expand bagexpansion=array tags\r\n| where isnotempty(tags)\r\n| where tags[0] =~ '{TagName}' and tags[1] contains '{TagValue}'\r\n| project id, tag",
+                    "size": 0,
+                    "title": "Subscription List",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "tag",
+                          "formatter": 1
+                        }
+                      ],
+                      "labelSettings": [
+                        {
+                          "columnId": "id",
+                          "label": "Subscription"
+                        },
+                        {
+                          "columnId": "tag",
+                          "label": "Tag Value"
+                        }
+                      ]
+                    }
+                  },
+                  "name": "query - 6"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resourcecontainers\r\n| where type == \"microsoft.resources/subscriptions/resourcegroups\"\r\n| extend tag = tags.{TagName}\r\n| mv-expand bagexpansion=array tags\r\n| where isnotempty(tags)\r\n| where tags[0] =~ '{TagName}' and tags[1] contains '{TagValue}'\r\n| project id, tag",
+                    "size": 0,
+                    "title": "Resource Groups List",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "tag",
+                          "formatter": 1
+                        }
+                      ],
+                      "labelSettings": [
+                        {
+                          "columnId": "id",
+                          "label": "Subscription"
+                        },
+                        {
+                          "columnId": "tag",
+                          "label": "Tag Value"
+                        }
+                      ]
+                    }
+                  },
+                  "name": "query - 6 - Copy"
                 }
               ]
             },
@@ -2231,33 +2299,15 @@
                   "type": 9,
                   "content": {
                     "version": "KqlParameterItem/1.0",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
                     "parameters": [
-                      {
-                        "id": "d1f42f81-eb8f-4653-a0ff-38564d7487b4",
-                        "version": "KqlParameterItem/1.0",
-                        "name": "Subscriptions",
-                        "type": 6,
-                        "description": "Subscriptions to filter the list of workspaces",
-                        "isRequired": true,
-                        "multiSelect": true,
-                        "quote": "'",
-                        "delimiter": ",",
-                        "value": [
-                          "value::all"
-                        ],
-                        "typeSettings": {
-                          "additionalResourceOptions": [
-                            "value::all"
-                          ],
-                          "includeAll": false,
-                          "selectAllValue": ""
-                        },
-                        "label": "Workspace Subscription"
-                      },
                       {
                         "id": "2373a24f-ad32-4909-a7f6-59b373dcde6c",
                         "version": "KqlParameterItem/1.0",
                         "name": "Workspaces",
+                        "label": "Workspace",
                         "type": 5,
                         "description": "LA Workspaces configured in vault diagnostic settings",
                         "isRequired": true,
@@ -2266,7 +2316,7 @@
                         "delimiter": ",",
                         "query": "where type =~ 'microsoft.operationalinsights/workspaces' | project id",
                         "crossComponentResources": [
-                          "{Subscriptions}"
+                          "{Subscription}"
                         ],
                         "typeSettings": {
                           "additionalResourceOptions": [
@@ -2278,14 +2328,13 @@
                         "resourceType": "microsoft.resourcegraph/resources",
                         "value": [
                           "value::all"
-                        ],
-                        "label": "Workspace"
+                        ]
                       }
                     ],
                     "style": "above",
                     "doNotRunWhenHidden": true,
-                    "queryType": 0,
-                    "resourceType": "microsoft.operationalinsights/workspaces"
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources"
                   },
                   "customWidth": "100",
                   "name": "Filters1"
@@ -2771,7 +2820,7 @@
                   "content": {
                     "version": "KqlItem/1.0",
                     "query": "securityresources\r\n| where type == \"microsoft.security/securescores\"\r\n| extend subscriptionSecureScore = round(100 * bin((todouble(properties.score.current))/ todouble(properties.score.max), 0.001))\r\n| where subscriptionSecureScore > 0\r\n| project subscriptionId, subscriptionSecureScore\r\n| order by subscriptionSecureScore asc",
-                    "size": 1,
+                    "size": 0,
                     "title": "Security Scores by Subscription",
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
@@ -2826,7 +2875,7 @@
                   "content": {
                     "version": "KqlItem/1.0",
                     "query": "SecurityResources \r\n| where type == 'microsoft.security/securescores/securescorecontrols' \r\n| extend SecureControl = properties.displayName, unhealthy = properties.unhealthyResourceCount, currentscore = properties.score.current, maxscore = properties.score.max, subscriptionId, details = properties\r\n| project SecureControl , unhealthy, currentscore, maxscore, subscriptionId, details",
-                    "size": 3,
+                    "size": 0,
                     "title": "Security Scores by Control",
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
@@ -3054,7 +3103,7 @@
                             ]
                           }
                         },
-                        "customWidth": "30",
+                        "customWidth": "33",
                         "name": "Severity"
                       },
                       {
@@ -3073,7 +3122,7 @@
                           ],
                           "visualization": "piechart"
                         },
-                        "customWidth": "30",
+                        "customWidth": "33",
                         "name": "query - 9"
                       },
                       {
@@ -3153,7 +3202,7 @@
                             }
                           ]
                         },
-                        "customWidth": "30",
+                        "customWidth": "33",
                         "name": "Top 5 attacked resources (with High Severity)"
                       },
                       {
@@ -3202,7 +3251,7 @@
                             }
                           ]
                         },
-                        "customWidth": "30",
+                        "customWidth": "33",
                         "name": "Top alert types"
                       },
                       {
@@ -3247,7 +3296,7 @@
                           },
                           "sortBy": []
                         },
-                        "customWidth": "25",
+                        "customWidth": "33",
                         "name": "New Alerts (Since last 24hrs)"
                       },
                       {
@@ -3696,11 +3745,7 @@
                             }
                           }
                         },
-                        "customWidth": "80",
-                        "name": "query - 17",
-                        "styleSettings": {
-                          "showBorder": true
-                        }
+                        "name": "query - 17"
                       },
                       {
                         "type": 11,
@@ -4168,10 +4213,7 @@
                           "value": "List"
                         },
                         "showPin": true,
-                        "name": "SecurityIncidents",
-                        "styleSettings": {
-                          "showBorder": true
-                        }
+                        "name": "SecurityIncidents"
                       },
                       {
                         "type": 11,
@@ -4622,24 +4664,46 @@
             "content": {
               "version": "NotebookGroup/1.0",
               "groupType": "editable",
+              "loadType": "always",
               "items": [
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "// Breakdown of compliance information for each assignment at subscription/MG/tenant scope\r\n// Gets aggregated compliance and policy definition information for each of the assignments in the selected scope as well as a few additional details, including: policySetDefinition or policyDefinition details for those assignments, the number of policies/groups within the policysetDefinitions listed, number of non-compliant policies within each policySetDefinition and the resource count breakdown per compliance state for those assignments.\r\n// Click the \"Run query\" command above to execute the query and see results.\r\npolicyResources\r\n| where type =~'Microsoft.Authorization/PolicyAssignments'\r\n| project policyAssignmentId = tolower(tostring(id)), policyAssignmentName = name, policyAssignmentDisplayName = tostring(properties.displayName), policyAssignmentScope = tostring(properties.scope), policyAssignmentDefinitionId = tolower(properties.policyDefinitionId), policyAssignmentNotScopes = tolower(properties.notScopes) \r\n| join kind=leftouter(\r\n policyResources\r\n | where type =~'Microsoft.Authorization/PolicySetDefinitions' or type =~'Microsoft.Authorization/PolicyDefinitions'\r\n | project definitionId = tolower(id), type, numberOfPolicies = array_length(properties.policyDefinitions), category = tostring(properties.metadata.category), numberOfGroups= array_length(properties.policyDefinitionGroups), mode = tostring(properties.mode)\r\n | extend isRegulatoryInitiative = iff(category =~ 'Regulatory Compliance', true, false)\r\n | extend definitionType = iff(type =~ 'Microsoft.Authorization/PolicysetDefinitions', 'initiative', 'policy')\r\n | extend isRPMode = iff(mode startswith 'Microsoft.', true, false)\r\n | extend category = 'Compute'\r\n | project definitionId, numberOfPolicies, category, numberOfGroups, isRegulatoryInitiative, definitionType, isRPMode\r\n) on $left.policyAssignmentDefinitionId == $right.definitionId\r\n| join kind=leftouter(\r\n policyResources \r\n | where type =~ 'Microsoft.PolicyInsights/PolicyStates'\r\n | extend complianceState = tostring(properties.complianceState)\r\n | extend policyStateResourceId =id, resourceId = tostring(properties.resourceId), policyAssignmentId = tostring(properties.policyAssignmentId), policyDefinitionId = tostring(properties.policyDefinitionId), policySetDefinitionId = tostring(properties.policySetDefinitionId), policyDefinitionReferenceId = tostring(properties.policyDefinitionReferenceId), policyDefinitionAction = tostring(properties.policyDefinitionAction), policyDefinitionGroupNames = iff(isnotnull(properties.policyDefinitionGroupNames), properties.policyDefinitionGroupNames, dynamic([''])), stateWeight = toint(properties.stateWeight)\r\n | summarize max(stateWeight) by resourceId, policyAssignmentId, policySetDefinitionId\r\n | summarize resourceCounts = count() by policyAssignmentId, policySetDefinitionId, max_stateWeight\r\n| extend complianceState = case(\r\nmax_stateWeight == 300, 'noncompliant',\r\nmax_stateWeight == 200, 'compliant',\r\nmax_stateWeight == 100, 'conflict',\r\nmax_stateWeight == 50, 'exempt',\r\nmax_stateWeight == 10, 'unknown',\r\n'notapplicable')\r\n | extend pack = pack('complianceState', complianceState, 'resourceCounts', resourceCounts), numberOfNonCompliantResources = toint(iff(complianceState =~ 'NonCompliant', resourceCounts,0))\r\n | summarize numberOfNonCompliantResources = max(numberOfNonCompliantResources), details = makelist(pack) by policyAssignmentId, policySetDefinitionId\r\n | limit 5000\r\n) on $left.policyAssignmentId == $right.policyAssignmentId\r\n| sort by numberOfNonCompliantResources desc\r\n| project-away policyAssignmentId1",
+                    "query": "// Breakdown of compliance information for each assignment at subscription/MG/tenant scope\r\n// Gets aggregated compliance and policy definition information for each of the assignments in the selected scope as well as a few additional details, including: policySetDefinition or policyDefinition details for those assignments, the number of policies/groups within the policysetDefinitions listed, number of non-compliant policies within each policySetDefinition and the resource count breakdown per compliance state for those assignments.\r\n// Click the \"Run query\" command above to execute the query and see results.\r\npolicyResources\r\n| where type =~'Microsoft.Authorization/PolicyAssignments'\r\n| project policyAssignmentId = tolower(tostring(id)), policyAssignmentName = name, policyAssignmentDisplayName = tostring(properties.displayName), policyAssignmentScope = tostring(properties.scope), policyAssignmentDefinitionId = tolower(properties.policyDefinitionId), policyAssignmentNotScopes = tolower(properties.notScopes) \r\n| where policyAssignmentScope == {Subscription}\r\n| join kind=leftouter(\r\n policyResources\r\n | where type =~'Microsoft.Authorization/PolicySetDefinitions' or type =~'Microsoft.Authorization/PolicyDefinitions'\r\n | project definitionId = tolower(id), type, numberOfPolicies = array_length(properties.policyDefinitions), category = tostring(properties.metadata.category), numberOfGroups= array_length(properties.policyDefinitionGroups), mode = tostring(properties.mode)\r\n | extend isRegulatoryInitiative = iff(category =~ 'Regulatory Compliance', true, false)\r\n | extend definitionType = iff(type =~ 'Microsoft.Authorization/PolicysetDefinitions', 'initiative', 'policy')\r\n | extend isRPMode = iff(mode startswith 'Microsoft.', true, false)\r\n | project definitionId, numberOfPolicies, category, numberOfGroups, isRegulatoryInitiative, definitionType, isRPMode\r\n) on $left.policyAssignmentDefinitionId == $right.definitionId\r\n| join kind=leftouter(\r\n policyResources \r\n | where type =~ 'Microsoft.PolicyInsights/PolicyStates'\r\n | extend complianceState = tostring(properties.complianceState)\r\n | extend policyStateResourceId =id, resourceId = tostring(properties.resourceId), policyAssignmentId = tostring(properties.policyAssignmentId), policyDefinitionId = tostring(properties.policyDefinitionId), policySetDefinitionId = tostring(properties.policySetDefinitionId), policyDefinitionReferenceId = tostring(properties.policyDefinitionReferenceId), policyDefinitionAction = tostring(properties.policyDefinitionAction), policyDefinitionGroupNames = iff(isnotnull(properties.policyDefinitionGroupNames), properties.policyDefinitionGroupNames, dynamic([''])), stateWeight = toint(properties.stateWeight)\r\n | summarize max(stateWeight) by resourceId, policyAssignmentId, policySetDefinitionId\r\n | summarize resourceCounts = count() by policyAssignmentId, policySetDefinitionId, max_stateWeight\r\n| extend complianceState = case(\r\nmax_stateWeight == 300, 'noncompliant',\r\nmax_stateWeight == 200, 'compliant',\r\nmax_stateWeight == 100, 'conflict',\r\nmax_stateWeight == 50, 'exempt',\r\nmax_stateWeight == 10, 'unknown',\r\n'notapplicable')\r\n | extend pack = pack('complianceState', complianceState, 'resourceCounts', resourceCounts), numberOfNonCompliantResources = toint(iff(complianceState =~ 'NonCompliant', resourceCounts,0))\r\n | summarize numberOfNonCompliantResources = max(numberOfNonCompliantResources), details = makelist(pack) by policyAssignmentId, policySetDefinitionId\r\n | limit 5000\r\n) on $left.policyAssignmentId == $right.policyAssignmentId\r\n| sort by numberOfNonCompliantResources desc\r\n| project-away policyAssignmentId1",
                     "size": 0,
-                    "title": "Compute Compliance",
+                    "title": "Resource Compliance",
                     "showExportToExcel": true,
                     "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
+                    "resourceType": "microsoft.resources/tenants",
                     "crossComponentResources": [
-                      "{Subscription}"
+                      "value::tenant"
                     ],
+                    "visualization": "table",
                     "gridSettings": {
                       "formatters": [
                         {
+                          "columnMatch": "policyAssignmentId",
+                          "formatter": 5
+                        },
+                        {
                           "columnMatch": "policyAssignmentName",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "policyAssignmentDisplayName",
+                          "formatter": 7,
+                          "formatOptions": {
+                            "linkTarget": "GenericDetails",
+                            "linkIsContextBlade": true
+                          }
+                        },
+                        {
+                          "columnMatch": "policyAssignmentScope",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "policyAssignmentDefinitionId",
                           "formatter": 5
                         },
                         {
@@ -4680,134 +4744,68 @@
                           }
                         }
                       ],
-                      "filter": true
-                    }
-                  },
-                  "name": "query - Compute Compliance"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "// Breakdown of compliance information for each assignment at subscription/MG/tenant scope\r\n// Gets aggregated compliance and policy definition information for each of the assignments in the selected scope as well as a few additional details, including: policySetDefinition or policyDefinition details for those assignments, the number of policies/groups within the policysetDefinitions listed, number of non-compliant policies within each policySetDefinition and the resource count breakdown per compliance state for those assignments.\r\n// Click the \"Run query\" command above to execute the query and see results.\r\npolicyResources\r\n| where type =~'Microsoft.Authorization/PolicyAssignments'\r\n| project policyAssignmentId = tolower(tostring(id)), policyAssignmentName = name, policyAssignmentDisplayName = tostring(properties.displayName), policyAssignmentScope = tostring(properties.scope), policyAssignmentDefinitionId = tolower(properties.policyDefinitionId), policyAssignmentNotScopes = tolower(properties.notScopes) \r\n| join kind=leftouter(\r\n policyResources\r\n | where type =~'Microsoft.Authorization/PolicySetDefinitions' or type =~'Microsoft.Authorization/PolicyDefinitions'\r\n | project definitionId = tolower(id), type, numberOfPolicies = array_length(properties.policyDefinitions), category = tostring(properties.metadata.category), numberOfGroups= array_length(properties.policyDefinitionGroups), mode = tostring(properties.mode)\r\n | extend isRegulatoryInitiative = iff(category =~ 'Regulatory Compliance', true, false)\r\n | extend definitionType = iff(type =~ 'Microsoft.Authorization/PolicysetDefinitions', 'initiative', 'policy')\r\n | extend isRPMode = iff(mode startswith 'Microsoft.', true, false)\r\n | extend category = 'Network'\r\n | project definitionId, numberOfPolicies, category, numberOfGroups, isRegulatoryInitiative, definitionType, isRPMode\r\n) on $left.policyAssignmentDefinitionId == $right.definitionId\r\n| join kind=leftouter(\r\n policyResources \r\n | where type =~ 'Microsoft.PolicyInsights/PolicyStates'\r\n | extend complianceState = tostring(properties.complianceState)\r\n | extend policyStateResourceId =id, resourceId = tostring(properties.resourceId), policyAssignmentId = tostring(properties.policyAssignmentId), policyDefinitionId = tostring(properties.policyDefinitionId), policySetDefinitionId = tostring(properties.policySetDefinitionId), policyDefinitionReferenceId = tostring(properties.policyDefinitionReferenceId), policyDefinitionAction = tostring(properties.policyDefinitionAction), policyDefinitionGroupNames = iff(isnotnull(properties.policyDefinitionGroupNames), properties.policyDefinitionGroupNames, dynamic([''])), stateWeight = toint(properties.stateWeight)\r\n | summarize max(stateWeight) by resourceId, policyAssignmentId, policySetDefinitionId\r\n | summarize resourceCounts = count() by policyAssignmentId, policySetDefinitionId, max_stateWeight\r\n| extend complianceState = case(\r\nmax_stateWeight == 300, 'noncompliant',\r\nmax_stateWeight == 200, 'compliant',\r\nmax_stateWeight == 100, 'conflict',\r\nmax_stateWeight == 50, 'exempt',\r\nmax_stateWeight == 10, 'unknown',\r\n'notapplicable')\r\n | extend pack = pack('complianceState', complianceState, 'resourceCounts', resourceCounts), numberOfNonCompliantResources = toint(iff(complianceState =~ 'NonCompliant', resourceCounts,0))\r\n | summarize numberOfNonCompliantResources = max(numberOfNonCompliantResources), details = makelist(pack) by policyAssignmentId, policySetDefinitionId\r\n | limit 5000\r\n) on $left.policyAssignmentId == $right.policyAssignmentId\r\n| sort by numberOfNonCompliantResources desc\r\n| project-away policyAssignmentId1",
-                    "size": 0,
-                    "title": "Network Compliance",
-                    "showExportToExcel": true,
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": [
-                      "{Subscription}"
-                    ],
-                    "gridSettings": {
-                      "formatters": [
+                      "filter": true,
+                      "sortBy": [
                         {
-                          "columnMatch": "policyAssignmentName",
-                          "formatter": 5
-                        },
-                        {
-                          "columnMatch": "policyAssignmentNotScopes",
-                          "formatter": 5
-                        },
-                        {
-                          "columnMatch": "definitionId",
-                          "formatter": 5
-                        },
-                        {
-                          "columnMatch": "numberOfPolicies",
-                          "formatter": 5
-                        },
-                        {
-                          "columnMatch": "numberOfGroups",
-                          "formatter": 5
-                        },
-                        {
-                          "columnMatch": "isRegulatoryInitiative",
-                          "formatter": 5
-                        },
-                        {
-                          "columnMatch": "isRPMode",
-                          "formatter": 5
-                        },
-                        {
-                          "columnMatch": "policySetDefinitionId",
-                          "formatter": 5
-                        },
-                        {
-                          "columnMatch": "details",
-                          "formatter": 7,
-                          "formatOptions": {
-                            "linkTarget": "CellDetails",
-                            "linkLabel": "🔍 View Details",
-                            "linkIsContextBlade": true
-                          }
+                          "itemKey": "category",
+                          "sortOrder": 2
                         }
                       ],
-                      "filter": true
-                    }
-                  },
-                  "name": "query - Network Compliance"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "// Breakdown of compliance information for each assignment at subscription/MG/tenant scope\r\n// Gets aggregated compliance and policy definition information for each of the assignments in the selected scope as well as a few additional details, including: policySetDefinition or policyDefinition details for those assignments, the number of policies/groups within the policysetDefinitions listed, number of non-compliant policies within each policySetDefinition and the resource count breakdown per compliance state for those assignments.\r\n// Click the \"Run query\" command above to execute the query and see results.\r\npolicyResources\r\n| where type =~'Microsoft.Authorization/PolicyAssignments'\r\n| project policyAssignmentId = tolower(tostring(id)), policyAssignmentName = name, policyAssignmentDisplayName = tostring(properties.displayName), policyAssignmentScope = tostring(properties.scope), policyAssignmentDefinitionId = tolower(properties.policyDefinitionId), policyAssignmentNotScopes = tolower(properties.notScopes) \r\n| join kind=leftouter(\r\n policyResources\r\n | where type =~'Microsoft.Authorization/PolicySetDefinitions' or type =~'Microsoft.Authorization/PolicyDefinitions'\r\n | project definitionId = tolower(id), type, numberOfPolicies = array_length(properties.policyDefinitions), category = tostring(properties.metadata.category), numberOfGroups= array_length(properties.policyDefinitionGroups), mode = tostring(properties.mode)\r\n | extend isRegulatoryInitiative = iff(category =~ 'Regulatory Compliance', true, false)\r\n | extend definitionType = iff(type =~ 'Microsoft.Authorization/PolicysetDefinitions', 'initiative', 'policy')\r\n | extend isRPMode = iff(mode startswith 'Microsoft.', true, false)\r\n | extend category = 'Data'\r\n | project definitionId, numberOfPolicies, category, numberOfGroups, isRegulatoryInitiative, definitionType, isRPMode\r\n) on $left.policyAssignmentDefinitionId == $right.definitionId\r\n| join kind=leftouter(\r\n policyResources \r\n | where type =~ 'Microsoft.PolicyInsights/PolicyStates'\r\n | extend complianceState = tostring(properties.complianceState)\r\n | extend policyStateResourceId =id, resourceId = tostring(properties.resourceId), policyAssignmentId = tostring(properties.policyAssignmentId), policyDefinitionId = tostring(properties.policyDefinitionId), policySetDefinitionId = tostring(properties.policySetDefinitionId), policyDefinitionReferenceId = tostring(properties.policyDefinitionReferenceId), policyDefinitionAction = tostring(properties.policyDefinitionAction), policyDefinitionGroupNames = iff(isnotnull(properties.policyDefinitionGroupNames), properties.policyDefinitionGroupNames, dynamic([''])), stateWeight = toint(properties.stateWeight)\r\n | summarize max(stateWeight) by resourceId, policyAssignmentId, policySetDefinitionId\r\n | summarize resourceCounts = count() by policyAssignmentId, policySetDefinitionId, max_stateWeight\r\n| extend complianceState = case(\r\nmax_stateWeight == 300, 'noncompliant',\r\nmax_stateWeight == 200, 'compliant',\r\nmax_stateWeight == 100, 'conflict',\r\nmax_stateWeight == 50, 'exempt',\r\nmax_stateWeight == 10, 'unknown',\r\n'notapplicable')\r\n | extend pack = pack('complianceState', complianceState, 'resourceCounts', resourceCounts), numberOfNonCompliantResources = toint(iff(complianceState =~ 'NonCompliant', resourceCounts,0))\r\n | summarize numberOfNonCompliantResources = max(numberOfNonCompliantResources), details = makelist(pack) by policyAssignmentId, policySetDefinitionId\r\n | limit 5000\r\n) on $left.policyAssignmentId == $right.policyAssignmentId\r\n| sort by numberOfNonCompliantResources desc\r\n| project-away policyAssignmentId1",
-                    "size": 0,
-                    "title": "Data Compliance",
-                    "showExportToExcel": true,
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": [
-                      "{Subscription}"
-                    ],
-                    "gridSettings": {
-                      "formatters": [
+                      "labelSettings": [
                         {
-                          "columnMatch": "policyAssignmentName",
-                          "formatter": 5
+                          "columnId": "policyAssignmentId",
+                          "label": "Assignment Id"
                         },
                         {
-                          "columnMatch": "policyAssignmentNotScopes",
-                          "formatter": 5
+                          "columnId": "policyAssignmentName",
+                          "label": "Assignment Name"
                         },
                         {
-                          "columnMatch": "definitionId",
-                          "formatter": 5
+                          "columnId": "policyAssignmentDisplayName",
+                          "label": "Assignment Display Name"
                         },
                         {
-                          "columnMatch": "numberOfPolicies",
-                          "formatter": 5
+                          "columnId": "policyAssignmentScope",
+                          "label": "Assignment Scope"
                         },
                         {
-                          "columnMatch": "numberOfGroups",
-                          "formatter": 5
+                          "columnId": "policyAssignmentDefinitionId",
+                          "label": "Assignment Definition Id"
                         },
                         {
-                          "columnMatch": "isRegulatoryInitiative",
-                          "formatter": 5
+                          "columnId": "definitionId",
+                          "label": "Definition Id"
                         },
                         {
-                          "columnMatch": "isRPMode",
-                          "formatter": 5
+                          "columnId": "numberOfPolicies",
+                          "label": "Number of Policies"
                         },
                         {
-                          "columnMatch": "policySetDefinitionId",
-                          "formatter": 5
+                          "columnId": "category",
+                          "label": "Category"
                         },
                         {
-                          "columnMatch": "details",
-                          "formatter": 7,
-                          "formatOptions": {
-                            "linkTarget": "CellDetails",
-                            "linkLabel": "🔍 View Details",
-                            "linkIsContextBlade": true
-                          }
+                          "columnId": "definitionType",
+                          "label": "Type"
+                        },
+                        {
+                          "columnId": "numberOfNonCompliantResources",
+                          "label": "Non Compliant Resources"
+                        },
+                        {
+                          "columnId": "details",
+                          "label": "Details"
                         }
-                      ],
-                      "filter": true
-                    }
+                      ]
+                    },
+                    "sortBy": [
+                      {
+                        "itemKey": "category",
+                        "sortOrder": 2
+                      }
+                    ]
                   },
-                  "name": "query - Data Compliance"
+                  "name": "query - ResourceCompliance"
                 },
                 {
                   "type": 3,
@@ -5139,19 +5137,19 @@
                           }
                         },
                         {
-                          "columnMatch": "ResourceGroup",
-                          "formatter": 14,
-                          "formatOptions": {
-                            "linkTarget": "Resource",
-                            "showIcon": false
-                          }
-                        },
-                        {
                           "columnMatch": "SubscriptionId",
                           "formatter": 15,
                           "formatOptions": {
                             "linkTarget": null,
                             "showIcon": true
+                          }
+                        },
+                        {
+                          "columnMatch": "ResourceGroup",
+                          "formatter": 14,
+                          "formatOptions": {
+                            "linkTarget": "Resource",
+                            "showIcon": false
                           }
                         },
                         {
@@ -5182,6 +5180,14 @@
                         {
                           "columnId": "PreTaxCost",
                           "label": "Cost"
+                        },
+                        {
+                          "columnId": "SubscriptionId",
+                          "label": "Subscription"
+                        },
+                        {
+                          "columnId": "Currency",
+                          "label": "Currency"
                         }
                       ]
                     },
@@ -5212,7 +5218,7 @@
                       {
                         "id": "6cc7fc26-1a56-41cb-ad43-301e0f9f8903",
                         "version": "KqlParameterItem/1.0",
-                        "name": "Environment",
+                        "name": "<Tag Name to be updated>",
                         "type": 2,
                         "multiSelect": true,
                         "quote": "\"",

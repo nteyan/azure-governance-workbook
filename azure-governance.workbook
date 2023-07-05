@@ -149,7 +149,7 @@
                   },
                   "queryType": 1,
                   "resourceType": "microsoft.resources/tenants",
-                  "value": "Tenant Root Group"
+                  "value": null
                 },
                 {
                   "id": "30297a43-7d69-4daf-93c9-8170d5a995b0",
@@ -174,9 +174,7 @@
                   },
                   "queryType": 1,
                   "resourceType": "microsoft.resources/tenants",
-                  "value": [
-                    "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
-                  ]
+                  "value": []
                 }
               ],
               "style": "above",
@@ -5104,8 +5102,7 @@
                         "jsonData": "[\r\n    { \"value\": \"SubscriptionId\", \"label\": \"Subscription\", \"selected\":true},\r\n    { \"value\": \"ResourceGroup\", \"label\": \"Resource Group\"},\r\n    { \"value\": \"ResourceType\", \"label\": \"Resource Type\"}\r\n]",
                         "timeContext": {
                           "durationMs": 86400000
-                        },
-                        "value": "ResourceType"
+                        }
                       },
                       {
                         "id": "55ef4a45-0603-48cf-bb9b-a963e7a33be2",
@@ -5118,8 +5115,7 @@
                         "jsonData": "[\r\n { \"value\": \"BillingMonthToDate\", \"label\": \"Billing MonthToDate\"},\r\n { \"value\": \"MonthToDate\", \"label\": \"MonthToDate\", \"selected\":true },\r\n { \"value\": \"TheLastBillingMonth\", \"label\": \"Last Billing Month\"},\r\n { \"value\": \"TheLastMonth\", \"label\": \"Last Month\"},\r\n { \"value\": \"WeekToDate\", \"label\": \"WeekToDate\"}\r\n]",
                         "timeContext": {
                           "durationMs": 86400000
-                        },
-                        "value": "BillingMonthToDate"
+                        }
                       }
                     ],
                     "style": "above",
@@ -5197,10 +5193,6 @@
                         {
                           "columnId": "PreTaxCost",
                           "label": "Cost"
-                        },
-                        {
-                          "columnId": "SubscriptionId",
-                          "label": "Subscription"
                         },
                         {
                           "columnId": "Currency",
@@ -6560,7 +6552,8 @@
                         "jsonData": "[{\"value\": \"westeurope\", \"label\": \"West Europe\" },\r\n{\"value\": \"eastus2\", \"label\": \"East US2\", \"selected\":true },\r\n{\"value\": \"centralus\", \"label\": \"Central US\" }\r\n]",
                         "timeContext": {
                           "durationMs": 86400000
-                        }
+                        },
+                        "value": "westeurope"
                       },
                       {
                         "id": "35da4e29-594a-43dc-8ac9-7190b8ba7a2b",

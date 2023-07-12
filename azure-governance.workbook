@@ -149,7 +149,7 @@
                   },
                   "queryType": 1,
                   "resourceType": "microsoft.resources/tenants",
-                  "value": null
+                  "value": "IT Service Management"
                 },
                 {
                   "id": "30297a43-7d69-4daf-93c9-8170d5a995b0",
@@ -174,7 +174,9 @@
                   },
                   "queryType": 1,
                   "resourceType": "microsoft.resources/tenants",
-                  "value": []
+                  "value": [
+                    "value::all"
+                  ]
                 }
               ],
               "style": "above",
@@ -1030,27 +1032,86 @@
                   "name": "query - 0"
                 },
                 {
-                  "type": 3,
+                  "type": 1,
                   "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "Resources\r\n| where type =~ 'microsoft.network/networksecuritygroups' and isnull(properties.networkInterfaces) and isnull(properties.subnets)\r\n| project Resource=id, resourceGroup, subscriptionId, location",
-                    "size": 1,
-                    "title": "Unassociated NSGs",
-                    "noDataMessage": "No Unassociated NSGs Found",
-                    "showExportToExcel": true,
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": [
-                      "{Subscription}"
-                    ]
+                    "json": "# Network Security Group"
                   },
-                  "name": "Unassociated NSGs"
+                  "name": "Network Security Group Title"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "7763ba7f-6187-4448-a94c-890392ed31d0",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "OrphanNSG",
+                        "label": "Orphan",
+                        "type": 10,
+                        "isRequired": true,
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "jsonData": "[\r\n    { \"value\":\"isnotnull\", \"label\":\"No\" },\r\n    { \"value\":\"isnull\", \"label\":\"Yes\" }\r\n]",
+                        "timeContext": {
+                          "durationMs": 86400000
+                        },
+                        "value": "isnotnull"
+                      }
+                    ],
+                    "style": "above",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "name": "NSG"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "Resources\r\n    | where type =~ 'microsoft.network/networksecuritygroups'\r\n    | project id, nsgRules = parse_json(parse_json(properties).securityRules), networksecurityGroupName = name, subscriptionId, resourceGroup , location\r\n    | mvexpand nsgRule = nsgRules\r\n    | project id, location, access=nsgRule.properties.access,protocol=nsgRule.properties.protocol ,direction=nsgRule.properties.direction,provisioningState= nsgRule.properties.provisioningState ,priority=nsgRule.properties.priority, \r\n        sourceAddressPrefix = nsgRule.properties.sourceAddressPrefix, \r\n        sourceAddressPrefixes = nsgRule.properties.sourceAddressPrefixes,\r\n        destinationAddressPrefix = nsgRule.properties.destinationAddressPrefix, \r\n        destinationAddressPrefixes = nsgRule.properties.destinationAddressPrefixes, \r\n        networksecurityGroupName, networksecurityRuleName = tostring(nsgRule.name), \r\n        subscriptionId, resourceGroup,\r\n        destinationPortRanges = nsgRule.properties.destinationPortRanges,\r\n        destinationPortRange = nsgRule.properties.destinationPortRange,\r\n        sourcePortRanges = nsgRule.properties.sourcePortRanges,\r\n        sourcePortRange = nsgRule.properties.sourcePortRange\r\n| extend Details = pack_all()\r\n| project id, location, access, direction, sourceAddressPrefix, sourcePortRange, destinationPortRange, subscriptionId, resourceGroup, Details",
+                    "query": "Resources\r\n| where type =~ 'microsoft.network/networksecuritygroups' and {OrphanNSG}(properties.networkInterfaces) and {OrphanNSG}(properties.subnets)\r\n| project Resource=id, resourceGroup, subscriptionId, location",
+                    "size": 0,
+                    "title": "NSGs",
+                    "noDataMessage": "No NSGs Found",
+                    "noDataMessageStyle": 3,
+                    "exportedParameters": [
+                      {
+                        "fieldName": "Resource",
+                        "parameterName": "SelectedResourceId",
+                        "parameterType": 5
+                      }
+                    ],
+                    "showExportToExcel": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "gridSettings": {
+                      "filter": true,
+                      "sortBy": [
+                        {
+                          "itemKey": "$gen_link_Resource_0",
+                          "sortOrder": 1
+                        }
+                      ]
+                    },
+                    "sortBy": [
+                      {
+                        "itemKey": "$gen_link_Resource_0",
+                        "sortOrder": 1
+                      }
+                    ]
+                  },
+                  "name": "NSGs"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "Resources\r\n    | where type =~ 'microsoft.network/networksecuritygroups'\r\n    | where id == \"{SelectedResourceId}\"\r\n    | project id, nsgRules = parse_json(parse_json(properties).securityRules), networksecurityGroupName = name, subscriptionId, resourceGroup , location\r\n    | mvexpand nsgRule = nsgRules\r\n    | project id, location, access=nsgRule.properties.access,protocol=nsgRule.properties.protocol ,direction=nsgRule.properties.direction,provisioningState= nsgRule.properties.provisioningState ,priority=nsgRule.properties.priority, \r\n        sourceAddressPrefix = nsgRule.properties.sourceAddressPrefix, \r\n        sourceAddressPrefixes = nsgRule.properties.sourceAddressPrefixes,\r\n        destinationAddressPrefix = nsgRule.properties.destinationAddressPrefix, \r\n        destinationAddressPrefixes = nsgRule.properties.destinationAddressPrefixes, \r\n        networksecurityGroupName, networksecurityRuleName = tostring(nsgRule.name), \r\n        subscriptionId, resourceGroup,\r\n        destinationPortRanges = nsgRule.properties.destinationPortRanges,\r\n        destinationPortRange = nsgRule.properties.destinationPortRange,\r\n        sourcePortRanges = nsgRule.properties.sourcePortRanges,\r\n        sourcePortRange = nsgRule.properties.sourcePortRange\r\n| extend Details = pack_all()\r\n| project id, location, access, direction, sourceAddressPrefix, sourcePortRange, destinationPortRange, subscriptionId, resourceGroup, Details",
                     "size": 1,
                     "title": "NSG Rules",
                     "showExportToExcel": true,
@@ -1081,15 +1142,54 @@
                       ]
                     }
                   },
+                  "conditionalVisibility": {
+                    "parameterName": "SelectedResourceId",
+                    "comparison": "isNotEqualTo"
+                  },
                   "name": "NSG Rules"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "# Public IPs"
+                  },
+                  "name": "Public IP Title"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "37cdc20d-07c3-466c-84bb-4d8050932641",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "OrphanIPs",
+                        "label": "Orphan",
+                        "type": 10,
+                        "isRequired": true,
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "jsonData": "[\r\n    { \"value\":\"isnotnull\", \"label\":\"No\" },\r\n    { \"value\":\"isnull\", \"label\":\"Yes\" }\r\n]",
+                        "timeContext": {
+                          "durationMs": 86400000
+                        },
+                        "value": "isnotnull"
+                      }
+                    ],
+                    "style": "above",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "name": "Public IPs"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "Resources\r\n| where type =~ 'Microsoft.Network/publicIPAddresses' and isnull(properties.ipAddress)\r\n| extend ipAddress = properties.ipAddress\r\n| extend sku = sku.name\r\n| extend Details = pack_all()\r\n| project Resource=id, subscriptionId, resourceGroup, name, location,sku,Details",
-                    "size": 1,
-                    "title": "Unattached Public IPs",
+                    "query": "Resources\r\n| where type =~ 'Microsoft.Network/publicIPAddresses' and {OrphanIPs}(properties.ipAddress)\r\n| extend ipAddress = properties.ipAddress\r\n| extend sku = sku.name\r\n| extend Details = pack_all()\r\n| project Resource=id, subscriptionId, resourceGroup, name, location,sku,Details",
+                    "size": 0,
                     "showExportToExcel": true,
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
@@ -1137,16 +1237,51 @@
                       }
                     }
                   },
-                  "name": "query - Networking Details - Unused PiPs"
+                  "name": "query - Networking Details - PiPs"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "# Application Gateway"
+                  },
+                  "name": "Application Gateway Title"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "007b8dbe-6bc6-40f9-b4bc-55f2ec14916c",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "OrphanAppGW",
+                        "label": "Orphan",
+                        "type": 10,
+                        "isRequired": true,
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "jsonData": "[\r\n    { \"value\":\"//\", \"label\":\"No\" },\r\n    { \"value\":\"|\", \"label\":\"Yes\" }\r\n]",
+                        "timeContext": {
+                          "durationMs": 86400000
+                        },
+                        "value": "//"
+                      }
+                    ],
+                    "style": "above",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "name": "ApplicationGateway"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources\r\n| where type =~ 'Microsoft.Network/applicationGateways'\r\n| extend backendPoolsCount = array_length(properties.backendAddressPools),SKUName= tostring(properties.sku.name), SKUTier= tostring(properties.sku.tier),SKUCapacity=properties.sku.capacity,backendPools=properties.backendAddressPools\r\n| project id, name, SKUName, SKUTier, SKUCapacity\r\n| join (\r\n    resources\r\n    | where type =~ 'Microsoft.Network/applicationGateways'\r\n    | mvexpand backendPools = properties.backendAddressPools\r\n    | extend backendIPCount = array_length(backendPools.properties.backendIPConfigurations)\r\n    | extend backendAddressesCount = array_length(backendPools.properties.backendAddresses)\r\n    | extend backendPoolName  = backendPools.properties.backendAddressPools.name\r\n    | summarize backendIPCount = sum(backendIPCount) ,backendAddressesCount=sum(backendAddressesCount) by id\r\n) on id\r\n| project-away id1\r\n| where  (backendIPCount == 0 or isempty(backendIPCount)) and (backendAddressesCount==0 or isempty(backendAddressesCount))\r\n| order by id asc",
+                    "query": "resources\r\n| where type =~ 'Microsoft.Network/applicationGateways'\r\n| extend backendPoolsCount = array_length(properties.backendAddressPools),SKUName= tostring(properties.sku.name), SKUTier= tostring(properties.sku.tier),SKUCapacity=properties.sku.capacity,backendPools=properties.backendAddressPools\r\n| project id, name, SKUName, SKUTier, SKUCapacity\r\n| join (\r\n    resources\r\n    | where type =~ 'Microsoft.Network/applicationGateways'\r\n    | mvexpand backendPools = properties.backendAddressPools\r\n    | extend backendIPCount = array_length(backendPools.properties.backendIPConfigurations)\r\n    | extend backendAddressesCount = array_length(backendPools.properties.backendAddresses)\r\n    | extend backendPoolName  = backendPools.properties.backendAddressPools.name\r\n    | summarize backendIPCount = sum(backendIPCount) ,backendAddressesCount=sum(backendAddressesCount) by id\r\n) on id\r\n| project-away id1\r\n{OrphanAppGW} where  (backendIPCount == 0 or isempty(backendIPCount)) and (backendAddressesCount==0 or isempty(backendAddressesCount))\r\n| order by id asc",
                     "size": 0,
-                    "title": "Orphan Application Gateways",
-                    "noDataMessage": "No orphan App Gateways",
+                    "noDataMessage": "No App Gateways",
                     "noDataMessageStyle": 3,
                     "showExportToExcel": true,
                     "queryType": 1,
@@ -1155,17 +1290,53 @@
                       "{Subscription}"
                     ]
                   },
-                  "name": "query - Orphan Application Gateways"
+                  "name": "query - Application Gateways"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "# Load Balancer"
+                  },
+                  "name": "Load Balancer Title"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "8cffc283-1878-4035-a669-5d9697e9edc1",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "OrphanLB",
+                        "label": "Orphan",
+                        "type": 10,
+                        "isRequired": true,
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "jsonData": "[\r\n    { \"value\":\"!=\", \"label\":\"No\" },\r\n    { \"value\":\"==\", \"label\":\"Yes\" }\r\n]",
+                        "timeContext": {
+                          "durationMs": 86400000
+                        },
+                        "value": "!="
+                      }
+                    ],
+                    "style": "above",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "name": "LoadBalancers - Copy"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources\r\n| where type == \"microsoft.network/loadbalancers\"\r\n//| where properties.backendAddressPools == \"[]\"\r\n| extend Details = pack_all()\r\n| project Resource=id, subscriptionId, resourceGroup, location, tostring(sku.name), Details",
+                    "query": "resources\r\n| where type == \"microsoft.network/loadbalancers\"\r\n| where properties.backendAddressPools {OrphanLB} \"[]\"\r\n| extend Details = pack_all()\r\n| project Resource=id, subscriptionId, resourceGroup, location, tostring(sku.name), Details",
                     "size": 0,
-                    "title": "Orphan Load Balancers",
-                    "noDataMessage": "No orphan load balancers",
+                    "noDataMessage": "No load balancers",
                     "noDataMessageStyle": 3,
+                    "showExportToExcel": true,
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
                     "crossComponentResources": [
@@ -1219,7 +1390,7 @@
                       ]
                     }
                   },
-                  "name": "query - Orphan Load Balancers"
+                  "name": "query - Load Balancers"
                 }
               ]
             },
@@ -1433,7 +1604,7 @@
                         "content": {
                           "version": "KqlItem/1.0",
                           "query": "resources\r\n| where type has 'microsoft.automation'\r\n\t or type has 'microsoft.logic'\r\n\t or type has 'microsoft.web/customapis'\r\n| extend type = case(\r\n\ttype =~ 'microsoft.automation/automationaccounts', 'Automation Accounts',\r\n\ttype =~ 'microsoft.web/connections', 'LogicApp Connectors',\r\n\ttype =~ 'microsoft.web/customapis','LogicApp API Connectors',\r\n\ttype =~ 'microsoft.logic/workflows','LogicApps',\r\n\ttype =~ 'microsoft.automation/automationaccounts/runbooks', 'Automation Runbooks',\r\n\ttype =~ 'microsoft.automation/automationaccounts/configurations', 'Automation Configurations',\r\n\tstrcat(\"Not Translated: \", type))\r\n| extend RunbookType = tostring(properties.runbookType)\r\n| extend LogicAppTrigger = properties.definition.triggers\r\n| extend LogicAppTrigger = iif(type =~ 'LogicApps', case(\r\n\tLogicAppTrigger has 'manual', tostring(LogicAppTrigger.manual.type),\r\n\tLogicAppTrigger has 'Recurrence', tostring(LogicAppTrigger.Recurrence.type),\r\n\tstrcat(\"Unknown Trigger type\", LogicAppTrigger)), LogicAppTrigger)\r\n| extend State = case(\r\n\ttype =~ 'Automation Runbooks', properties.state, \r\n\ttype =~ 'LogicApps', properties.state,\r\n\ttype =~ 'Automation Accounts', properties.state,\r\n\ttype =~ 'Automation Configurations', properties.state,\r\n\t' ')\r\n| extend CreatedDate = case(\r\n\ttype =~ 'Automation Runbooks', properties.creationTime, \r\n\ttype =~ 'LogicApps', properties.createdTime,\r\n\ttype =~ 'Automation Accounts', properties.creationTime,\r\n\ttype =~ 'Automation Configurations', properties.creationTime,\r\n\t' ')\r\n| extend LastModified = case(\r\n\ttype =~ 'Automation Runbooks', properties.lastModifiedTime, \r\n\ttype =~ 'LogicApps', properties.changedTime,\r\n\ttype =~ 'Automation Accounts', properties.lastModifiedTime,\r\n\ttype =~ 'Automation Configurations', properties.lastModifiedTime,\r\n\t' ')\r\n| extend Details = pack_all()\r\n| project Resource=id, subscriptionId, type, resourceGroup, RunbookType, LogicAppTrigger, State, Details",
-                          "size": 1,
+                          "size": 0,
                           "title": "Details",
                           "noDataMessage": "No resources found",
                           "showExportToExcel": true,
@@ -1505,10 +1676,7 @@
                             "sortOrderField": 1
                           }
                         },
-                        "name": "query - PaaS - Automation Detailed",
-                        "styleSettings": {
-                          "padding": "0 0 200px 0"
-                        }
+                        "name": "query - PaaS - Automation Detailed"
                       }
                     ]
                   },
@@ -1598,7 +1766,7 @@
                         "content": {
                           "version": "KqlItem/1.0",
                           "query": "resources\r\n| where type has 'microsoft.web'\r\n\t or type =~ 'microsoft.apimanagement/service'\r\n\t or type =~ 'microsoft.network/frontdoors'\r\n\t or type =~ 'microsoft.network/applicationgateways'\r\n\t or type =~ 'microsoft.appconfiguration/configurationstores'\r\n| extend type = case(\r\n\ttype == 'microsoft.web/serverfarms', \"App Service Plans\",\r\n\tkind == 'functionapp', \"Azure Functions\", \r\n\tkind == \"api\", \"API Apps\", \r\n\ttype == 'microsoft.web/sites', \"App Services\",\r\n\ttype =~ 'microsoft.network/applicationgateways', 'App Gateways',\r\n\ttype =~ 'microsoft.network/frontdoors', 'Front Door',\r\n\ttype =~ 'microsoft.apimanagement/service', 'API Management',\r\n\ttype =~ 'microsoft.web/certificates', 'App Certificates',\r\n\ttype =~ 'microsoft.appconfiguration/configurationstores', 'App Config Stores',\r\n\tstrcat(\"Not Translated: \", type))\r\n| where type !has \"Not Translated\"\r\n| extend Sku = case(\r\n\ttype =~ 'App Gateways', properties.sku.name, \r\n\ttype =~ 'Azure Functions', properties.sku,\r\n\ttype =~ 'API Management', sku.name,\r\n\ttype =~ 'App Service Plans', sku.name,\r\n\ttype =~ 'App Services', properties.sku,\r\n\ttype =~ 'App Config Stores', sku.name,\r\n\t' ')\r\n| extend State = case(\r\n\ttype =~ 'App Config Stores', properties.provisioningState,\r\n\ttype =~ 'App Service Plans', properties.status,\r\n\ttype =~ 'Azure Functions', properties.state,\r\n\ttype =~ 'App Services', properties.state,\r\n\ttype =~ 'API Management', properties.provisioningState,\r\n\ttype =~ 'App Gateways', properties.provisioningState,\r\n\ttype =~ 'Front Door', properties.provisioningState,\r\n\t' ')\r\n| mv-expand publicIpId = properties.frontendIPConfigurations\r\n| mv-expand publicIpId = publicIpId.properties.publicIPAddress.id\r\n| extend publicIpId = tostring(publicIpId)\r\n\t| join kind=leftouter(\r\n\t  \tResources\r\n  \t\t| where type =~ 'microsoft.network/publicipaddresses'\r\n  \t\t| project publicIpId = id, publicIpAddress = tostring(properties.ipAddress)) on publicIpId\r\n| extend PublicIP = case(\r\n\ttype =~ 'API Management', properties.publicIPAddresses,\r\n\ttype =~ 'App Gateways', publicIpAddress,\r\n    type =~ 'App Services', properties.inboundIpAddress,\r\n    type =~ 'Azure Functions', properties.inboundIpAddress,\r\n\t' ')\r\n| extend Instances = case(\r\n\ttype =~ 'API Management', sku.capacity,\r\n    type =~ 'App Services', properties.siteConfig.numberOfWorkers,\r\n    type =~ 'Azure Functions', properties.siteConfig.numberOfWorkers,\r\n    type =~ 'App Service Plans', properties.currentNumberOfWorkers,\r\n\t' ')\r\n| extend ServicePlan = case(\r\n    type =~ 'App Services', properties.serverFarmId,\r\n    type =~ 'Azure Functions', properties.serverFarmId,\r\n\t' ')\r\n| extend Details = pack_all()\r\n| project Resource=id, type, subscriptionId, Sku, State, PublicIP, Instances, ServicePlan, Details",
-                          "size": 1,
+                          "size": 0,
                           "noDataMessage": "No resources found",
                           "showExportToExcel": true,
                           "queryType": 1,
@@ -1669,10 +1837,7 @@
                             "sortOrderField": 1
                           }
                         },
-                        "name": "query - PaaS - Apps Detailed",
-                        "styleSettings": {
-                          "padding": "0 0 200px 0"
-                        }
+                        "name": "query - PaaS - Apps Detailed"
                       }
                     ]
                   },
@@ -1762,7 +1927,7 @@
                         "content": {
                           "version": "KqlItem/1.0",
                           "query": "// data\r\n// Click the \"Run query\" command above to execute the query and see results.\r\nresources \r\n| where type =~ 'microsoft.documentdb/databaseaccounts'\r\n\tor type =~ 'microsoft.sql/servers/databases'\r\n\tor type =~ 'microsoft.dbformysql/servers'\r\n\tor type =~ 'microsoft.sql/servers'\r\n    or type =~ 'Microsoft.DBforPostgreSQL/servers'\r\n    or type =~ 'Microsoft.DBforMariaDB/servers'\r\n    or type =~ 'microsoft.dbforpostgresql/flexibleservers'\r\n| extend type = case(\r\n\ttype =~ 'microsoft.documentdb/databaseaccounts', 'CosmosDB',\r\n\ttype =~ 'microsoft.sql/servers/databases', 'SQL DBs',\r\n\ttype =~ 'microsoft.dbformysql/servers', 'MySQL Servers',\r\n\ttype =~ 'microsoft.sql/servers', 'SQL Servers',\r\n    type =~ 'Microsoft.DBforPostgreSQL/servers', 'PostgreSQL Servers',\r\n    type =~ 'microsoft.dbforpostgresql/flexibleservers', 'PostgreSQL Flexi Servers',\r\n    type =~ 'Microsoft.DBforMariaDB/servers', 'MariaDB Servers',\r\n\tstrcat(\"Not Translated: \", type))\r\n| extend Sku = case(\r\n\ttype =~ 'CosmosDB', properties.databaseAccountOfferType,\r\n\ttype =~ 'SQL DBs', sku.name,\r\n\ttype =~ 'MySQL Servers', sku.name,\r\n    type =~ 'PostgreSQL Servers', sku.name,\r\n    type =~ 'PostgreSQL Flexi Servers', sku.name,\r\n    type =~ 'MariaDB Servers', sku.name,\r\n\t' ')\r\n| extend Status = case(\r\n\ttype =~ 'CosmosDB', properties.provisioningState,\r\n\ttype =~ 'SQL DBs', properties.status,\r\n    type =~ 'SQL Servers', properties.state,\r\n\ttype =~ 'MySQL Servers', properties.userVisibleState,\r\n    type =~ 'PostgreSQL Servers', properties.state,\r\n    type =~ 'PostgreSQL Flexi Servers', properties.state,\r\n    type =~ 'MariaDB Servers', properties.userVisibleState,\r\n\t' ')\r\n| extend Endpoint = case(\r\n\ttype =~ 'MySQL Servers', properties.fullyQualifiedDomainName,\r\n\ttype =~ 'SQL Servers', properties.fullyQualifiedDomainName,\r\n\ttype =~ 'CosmosDB', properties.documentEndpoint,\r\n    type =~ 'PostgreSQL Servers', properties.fullyQualifiedDomainName,\r\n    type =~ 'PostgreSQL Flexi Servers', properties.fullyQualifiedDomainName,\r\n    type =~ 'MariaDB Servers', properties.fullyQualifiedDomainName,\r\n\t' ')\r\n| extend PublicNetworkAccess = case(\r\n\ttype =~ 'MySQL Servers', properties.publicNetworkAccess,\r\n\ttype =~ 'SQL Servers', properties.publicNetworkAccess,\r\n    type =~ 'PostgreSQL Servers', properties.publicNetworkAccess,\r\n    type =~ 'PostgreSQL Flexi Servers', properties.publicNetworkAccess,\r\n    type =~ 'MariaDB Servers', properties.publicNetworkAccess,\r\n\t' ')\r\n| extend Version = case(\r\n\ttype =~ 'MySQL Servers', properties.version,\r\n\ttype =~ 'SQL Servers', properties.version,\r\n    type =~ 'PostgreSQL Servers', properties.version,\r\n    type =~ 'PostgreSQL Flexi Servers', properties.version,\r\n    type =~ 'MariaDB Servers', properties.version,\r\n\t' ')\r\n| extend maxSizeGB = todouble(case(\r\n\ttype =~ 'SQL DBs', properties.maxSizeBytes,\r\n\ttype =~ 'MySQL Servers', properties.storageProfile.storageMB,\r\n    type =~ 'PostgreSQL Servers', properties.storageProfile.storageMB,\r\n    type =~ 'PostgreSQL Flexi Servers', properties.storageProfile.storageMB,\r\n    type =~ 'MariaDB Servers', properties.storageProfile.storageMB,\r\n\t' '))\r\n| extend maxSizeGB = iif(type has 'SQL DBs', maxSizeGB /1000 /1000, maxSizeGB)\r\n| extend Details = pack_all()\r\n| project Resource=id, resourceGroup, subscriptionId, type, Sku, Status, Endpoint, Version, PublicNetworkAccess, maxSizeGB, Details\r\n\r\n",
-                          "size": 1,
+                          "size": 0,
                           "title": "Details",
                           "noDataMessage": "No resources found",
                           "showExportToExcel": true,
@@ -1844,10 +2009,7 @@
                             "sortOrderField": 1
                           }
                         },
-                        "name": "query - PaaS - Data Detailed",
-                        "styleSettings": {
-                          "padding": "0 0 200px 0"
-                        }
+                        "name": "query - PaaS - Data Detailed"
                       }
                     ]
                   },
@@ -1937,7 +2099,7 @@
                         "content": {
                           "version": "KqlItem/1.0",
                           "query": "resources \r\n| where type =~ 'microsoft.storagesync/storagesyncservices'\r\n\tor type =~ 'microsoft.recoveryservices/vaults'\r\n\tor type =~ 'microsoft.storage/storageaccounts'\r\n\tor type =~ 'microsoft.keyvault/vaults'\r\n| extend type = case(\r\n\ttype =~ 'microsoft.storagesync/storagesyncservices', 'Azure File Sync',\r\n\ttype =~ 'microsoft.recoveryservices/vaults', 'Azure Backup',\r\n\ttype =~ 'microsoft.storage/storageaccounts', 'Storage Accounts',\r\n\ttype =~ 'microsoft.keyvault/vaults', 'Key Vaults',\r\n\tstrcat(\"Not Translated: \", type))\r\n| extend Sku = case(\r\n\ttype !has 'Key Vaults', sku.name,\r\n\ttype =~ 'Key Vaults', properties.sku.name,\r\n\t' ')\r\n| extend Details = pack_all()\r\n| project Resource=id, type, kind, subscriptionId, resourceGroup, Sku, Details",
-                          "size": 1,
+                          "size": 0,
                           "noDataMessage": "No resources found",
                           "showExportToExcel": true,
                           "queryType": 1,
@@ -1985,10 +2147,7 @@
                             }
                           }
                         },
-                        "name": "query - PaaS - Data Detailed",
-                        "styleSettings": {
-                          "padding": "0 0 200px 0"
-                        }
+                        "name": "query - PaaS - Data Detailed"
                       }
                     ]
                   },
@@ -2441,9 +2600,7 @@
                         },
                         "queryType": 0,
                         "resourceType": "microsoft.operationalinsights/workspaces",
-                        "value": [
-                          "value::all"
-                        ]
+                        "value": null
                       },
                       {
                         "id": "256c7e33-df90-4956-aaf3-699aeaad912f",
@@ -5087,7 +5244,7 @@
                         "timeContext": {
                           "durationMs": 86400000
                         },
-                        "value": "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
+                        "value": "/subscriptions/e98fff73-a41f-4746-a887-e0423ff6c2f4"
                       },
                       {
                         "id": "b73ef334-95b2-4ead-8dd2-51a90a90ce6f",
@@ -6605,7 +6762,7 @@
     }
   ],
   "fallbackResourceIds": [
-    "azure monitor"
+    "Azure Monitor"
   ],
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
 }

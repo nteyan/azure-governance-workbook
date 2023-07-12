@@ -149,7 +149,7 @@
                   },
                   "queryType": 1,
                   "resourceType": "microsoft.resources/tenants",
-                  "value": "IT Service Management"
+                  "value": "Tenant Root Group"
                 },
                 {
                   "id": "30297a43-7d69-4daf-93c9-8170d5a995b0",
@@ -1054,11 +1054,11 @@
                           "additionalResourceOptions": [],
                           "showDefault": false
                         },
-                        "jsonData": "[\r\n    { \"value\":\"isnotnull\", \"label\":\"No\" },\r\n    { \"value\":\"isnull\", \"label\":\"Yes\" }\r\n]",
+                        "jsonData": "[\r\n    { \"value\":\"and isnotnull(properties.networkInterfaces) or type =~ 'microsoft.network/networksecuritygroups' and isnotnull(properties.subnets)\", \"label\":\"No\" },\r\n    { \"value\":\"and isnull(properties.networkInterfaces) and isnull(properties.subnets)\", \"label\":\"Yes\" }\r\n]",
                         "timeContext": {
                           "durationMs": 86400000
                         },
-                        "value": "isnotnull"
+                        "value": "and isnotnull(properties.networkInterfaces) or type =~ 'microsoft.network/networksecuritygroups' and isnotnull(properties.subnets)"
                       }
                     ],
                     "style": "above",
@@ -1071,7 +1071,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "Resources\r\n| where type =~ 'microsoft.network/networksecuritygroups' and {OrphanNSG}(properties.networkInterfaces) and {OrphanNSG}(properties.subnets)\r\n| project Resource=id, resourceGroup, subscriptionId, location",
+                    "query": "Resources\r\n| where type =~ 'microsoft.network/networksecuritygroups' {OrphanNSG}\r\n| project Resource=id, resourceGroup, subscriptionId, location",
                     "size": 0,
                     "title": "NSGs",
                     "noDataMessage": "No NSGs Found",
@@ -1090,20 +1090,9 @@
                       "{Subscription}"
                     ],
                     "gridSettings": {
-                      "filter": true,
-                      "sortBy": [
-                        {
-                          "itemKey": "$gen_link_Resource_0",
-                          "sortOrder": 1
-                        }
-                      ]
+                      "filter": true
                     },
-                    "sortBy": [
-                      {
-                        "itemKey": "$gen_link_Resource_0",
-                        "sortOrder": 1
-                      }
-                    ]
+                    "sortBy": []
                   },
                   "name": "NSGs"
                 },
@@ -6762,7 +6751,7 @@
     }
   ],
   "fallbackResourceIds": [
-    "Azure Monitor"
+    "azure monitor"
   ],
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
 }

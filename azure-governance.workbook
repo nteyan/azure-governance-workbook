@@ -175,7 +175,7 @@
                   "queryType": 1,
                   "resourceType": "microsoft.resources/tenants",
                   "value": [
-                    "value::all"
+                    "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
                   ]
                 }
               ],
@@ -198,6 +198,11 @@
                 "parameterName": "SelectedTab",
                 "comparison": "isNotEqualTo",
                 "value": "RC_Quota"
+              },
+              {
+                "parameterName": "SelectedTab",
+                "comparison": "isNotEqualTo",
+                "value": "RC_Compliance"
               }
             ],
             "name": "parameters - 0"
@@ -786,6 +791,8 @@
                     "query": "Resources\r\n| where type has \"microsoft.network/networkinterfaces\"\r\n| extend VM = properties.virtualMachine.id\r\n| extend privateEndPoint = properties['privateEndpoint']['id']\r\n| where properties !has 'virtualmachine' and isnull(privateEndPoint)\r\n| where properties['linkedResourceType'] != \"Microsoft.Netapp/volumes\"\r\n| project id, subscriptionId, resourceGroup, location, VM, privateEndPoint, properties\r\n",
                     "size": 0,
                     "title": "Orphan NICs",
+                    "noDataMessage": "No orphan NICs",
+                    "noDataMessageStyle": 3,
                     "showExportToExcel": true,
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
@@ -851,14 +858,6 @@
                   "name": "Orphan NICs"
                 },
                 {
-                  "type": 1,
-                  "content": {
-                    "json": "States and billing status of Azure Virtual Machines : https://learn.microsoft.com/en-us/azure/virtual-machines/states-billing",
-                    "style": "info"
-                  },
-                  "name": "text - 11"
-                },
-                {
                   "type": 9,
                   "content": {
                     "version": "KqlParameterItem/1.0",
@@ -885,10 +884,10 @@
                         },
                         "queryType": 1,
                         "resourceType": "microsoft.resourcegraph/resources",
-                        "value": null
+                        "value": "VM deallocated"
                       }
                     ],
-                    "style": "pills",
+                    "style": "above",
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources"
                   },
@@ -978,6 +977,14 @@
                     }
                   },
                   "name": "query - VM List by State"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "States and billing status of Azure Virtual Machines : https://learn.microsoft.com/en-us/azure/virtual-machines/states-billing",
+                    "style": "info"
+                  },
+                  "name": "text - 11"
                 }
               ]
             },
@@ -2161,6 +2168,14 @@
               "groupType": "editable",
               "items": [
                 {
+                  "type": 1,
+                  "content": {
+                    "json": "This workbook tab does not work for Tag Name with space, hyphen and underscore ",
+                    "style": "warning"
+                  },
+                  "name": "text - 8"
+                },
+                {
                   "type": 9,
                   "content": {
                     "version": "KqlParameterItem/1.0",
@@ -2180,7 +2195,8 @@
                           "{Subscription}"
                         ],
                         "typeSettings": {
-                          "additionalResourceOptions": []
+                          "additionalResourceOptions": [],
+                          "showDefault": false
                         },
                         "timeContext": {
                           "durationMs": 86400000
@@ -2224,7 +2240,7 @@
                         },
                         "queryType": 1,
                         "resourceType": "microsoft.resourcegraph/resources",
-                        "value": null
+                        "value": "TOTO"
                       }
                     ],
                     "style": "formVertical",
@@ -2232,15 +2248,16 @@
                     "resourceType": "microsoft.resourcegraph/resources"
                   },
                   "customWidth": "33",
+                  "conditionalVisibility": {
+                    "parameterName": "TagName",
+                    "comparison": "isNotEqualTo"
+                  },
                   "name": "parameters - 2"
                 },
                 {
                   "type": 9,
                   "content": {
                     "version": "KqlParameterItem/1.0",
-                    "crossComponentResources": [
-                      "{Subscription}"
-                    ],
                     "parameters": [
                       {
                         "id": "81756016-e942-4fa0-976e-06d8ce919f83",
@@ -2256,21 +2273,25 @@
                         "timeContext": {
                           "durationMs": 86400000
                         },
-                        "value": "microsoft.resourcegraph/queries"
+                        "value": null
                       }
                     ],
                     "style": "formVertical",
                     "queryType": 0,
-                    "resourceType": "microsoft.resourcegraph/resources"
+                    "resourceType": "microsoft.operationalinsights/workspaces"
                   },
                   "customWidth": "33",
+                  "conditionalVisibility": {
+                    "parameterName": "TagName",
+                    "comparison": "isNotEqualTo"
+                  },
                   "name": "ResourceType"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "Resources\r\n| extend tag = tags.{TagName}\r\n| mv-expand bagexpansion=array tags\r\n| where isnotempty(tags)\r\n//| where tags[0] =~ '{TagName}' and tags[1] =~ '{TagValue}'\r\n| where tags[0] =~ '{TagName}' and tags[1] contains '{TagValue}'\r\n| where type contains '{ResourceType}'\r\n| project id, tag",
+                    "query": "Resources\r\n| extend tag = tags.{TagName}\r\n| mv-expand bagexpansion=array tags\r\n| where isnotempty(tags)\r\n//| where tags[0] =~ '{TagName}' and tags[1] =~ '{TagValue}'\r\n| where tags[0] == '{TagName}' and tags[1] == '{TagValue}'\r\n| where type contains '{ResourceType}'\r\n| project id, tag",
                     "size": 0,
                     "title": "Resource with Tag",
                     "showExportToExcel": true,
@@ -2293,7 +2314,7 @@
                       ]
                     }
                   },
-                  "customWidth": "33",
+                  "customWidth": "50",
                   "conditionalVisibility": {
                     "parameterName": "TagName",
                     "comparison": "isNotEqualTo"
@@ -2304,7 +2325,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "Resources\r\n| extend tag = tags.{TagName}\r\n| mv-expand bagexpansion=array tags\r\n| where isnotempty(tags)\r\n| where tags[0] =~ '{TagName}' and tags[1] =~ ''\r\n| where type contains '{ResourceType}'\r\n| project id, tag",
+                    "query": "Resources\r\n| extend tag = tags.{TagName}\r\n| mv-expand bagexpansion=array tags\r\n| where isnotempty(tags)\r\n| where tags[0] == '{TagName}' and tags[1] == ''\r\n| where type contains '{ResourceType}'\r\n| project id, tag",
                     "size": 0,
                     "title": "Tag with Empty Value",
                     "noDataMessage": "No tagged Resources with empty value found",
@@ -2330,7 +2351,7 @@
                       ]
                     }
                   },
-                  "customWidth": "33",
+                  "customWidth": "50",
                   "conditionalVisibility": {
                     "parameterName": "TagName",
                     "comparison": "isNotEqualTo"
@@ -2373,14 +2394,13 @@
                       ]
                     }
                   },
-                  "customWidth": "33",
                   "name": "query - Untagged Resources"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resourcecontainers\r\n| where type == \"microsoft.resources/subscriptions\"\r\n| extend tag = tags.{TagName}\r\n| mv-expand bagexpansion=array tags\r\n| where isnotempty(tags)\r\n| where tags[0] =~ '{TagName}' and tags[1] contains '{TagValue}'\r\n| project id, tag",
+                    "query": "resourcecontainers\r\n| where type == \"microsoft.resources/subscriptions\"\r\n| extend tag = tags.{TagName}\r\n| mv-expand bagexpansion=array tags\r\n| where isnotempty(tags)\r\n| where tags[0] == '{TagName}' and tags[1] == '{TagValue}'\r\n| project id, tag",
                     "size": 0,
                     "title": "Subscription List",
                     "queryType": 1,
@@ -2407,13 +2427,13 @@
                       ]
                     }
                   },
-                  "name": "query - 6"
+                  "name": "query - Subscription with Tag"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resourcecontainers\r\n| where type == \"microsoft.resources/subscriptions/resourcegroups\"\r\n| extend tag = tags.{TagName}\r\n| mv-expand bagexpansion=array tags\r\n| where isnotempty(tags)\r\n| where tags[0] =~ '{TagName}' and tags[1] contains '{TagValue}'\r\n| project id, tag",
+                    "query": "resourcecontainers\r\n| where type == \"microsoft.resources/subscriptions/resourcegroups\"\r\n| extend tag = tags.{TagName}\r\n| mv-expand bagexpansion=array tags\r\n| where isnotempty(tags)\r\n| where tags[0] == '{TagName}' and tags[1] == '{TagValue}'\r\n| project id, tag",
                     "size": 0,
                     "title": "Resource Groups List",
                     "queryType": 1,
@@ -2440,7 +2460,7 @@
                       ]
                     }
                   },
-                  "name": "query - 6 - Copy"
+                  "name": "query - ResourceGroup with Tag"
                 }
               ]
             },
@@ -2589,7 +2609,9 @@
                         },
                         "queryType": 0,
                         "resourceType": "microsoft.operationalinsights/workspaces",
-                        "value": null
+                        "value": [
+                          "/subscriptions/3D2171D3-2B1E-41D6-A62C-DC780B0C5A04"
+                        ]
                       },
                       {
                         "id": "256c7e33-df90-4956-aaf3-699aeaad912f",
@@ -4827,10 +4849,71 @@
               "loadType": "always",
               "items": [
                 {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "crossComponentResources": [
+                      "value::tenant"
+                    ],
+                    "parameters": [
+                      {
+                        "id": "f967854d-c31e-46a6-b8b0-6b9fff7ce582",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "ManagementGroup",
+                        "label": "Management Group",
+                        "type": 2,
+                        "query": "resourcecontainers\r\n| where type == \"microsoft.management/managementgroups\"\r\n| extend name = properties.displayName\r\n| project name",
+                        "crossComponentResources": [
+                          "value::tenant"
+                        ],
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "timeContext": {
+                          "durationMs": 86400000
+                        },
+                        "queryType": 1,
+                        "resourceType": "microsoft.resources/tenants",
+                        "value": "Prod"
+                      },
+                      {
+                        "id": "476f61f4-2271-4e58-9b5e-7958d9a4ca3b",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "Subscription",
+                        "type": 6,
+                        "query": "resourcecontainers\r\n| where type == \"microsoft.resources/subscriptions\"\r\n| where properties['managementGroupAncestorsChain'] contains '{ManagementGroup:label}'",
+                        "crossComponentResources": [
+                          "value::tenant"
+                        ],
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "timeContext": {
+                          "durationMs": 86400000
+                        },
+                        "queryType": 1,
+                        "resourceType": "microsoft.resources/tenants"
+                      }
+                    ],
+                    "style": "above",
+                    "doNotRunWhenHidden": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resources/tenants"
+                  },
+                  "conditionalVisibility": {
+                    "parameterName": "SelectedTab",
+                    "comparison": "isEqualTo",
+                    "value": "RC_Compliance"
+                  },
+                  "name": "parameters - Scope Filter For RC_Compliance"
+                },
+                {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "// Breakdown of compliance information for each assignment at subscription/MG/tenant scope\r\n// Gets aggregated compliance and policy definition information for each of the assignments in the selected scope as well as a few additional details, including: policySetDefinition or policyDefinition details for those assignments, the number of policies/groups within the policysetDefinitions listed, number of non-compliant policies within each policySetDefinition and the resource count breakdown per compliance state for those assignments.\r\n// Click the \"Run query\" command above to execute the query and see results.\r\npolicyResources\r\n| where type =~'Microsoft.Authorization/PolicyAssignments'\r\n| project policyAssignmentId = tolower(tostring(id)), policyAssignmentName = name, policyAssignmentDisplayName = tostring(properties.displayName), policyAssignmentScope = tostring(properties.scope), policyAssignmentDefinitionId = tolower(properties.policyDefinitionId), policyAssignmentNotScopes = tolower(properties.notScopes) \r\n| where policyAssignmentScope == {Subscription}\r\n| join kind=leftouter(\r\n policyResources\r\n | where type =~'Microsoft.Authorization/PolicySetDefinitions' or type =~'Microsoft.Authorization/PolicyDefinitions'\r\n | project definitionId = tolower(id), type, numberOfPolicies = array_length(properties.policyDefinitions), category = tostring(properties.metadata.category), numberOfGroups= array_length(properties.policyDefinitionGroups), mode = tostring(properties.mode)\r\n | extend isRegulatoryInitiative = iff(category =~ 'Regulatory Compliance', true, false)\r\n | extend definitionType = iff(type =~ 'Microsoft.Authorization/PolicysetDefinitions', 'initiative', 'policy')\r\n | extend isRPMode = iff(mode startswith 'Microsoft.', true, false)\r\n | project definitionId, numberOfPolicies, category, numberOfGroups, isRegulatoryInitiative, definitionType, isRPMode\r\n) on $left.policyAssignmentDefinitionId == $right.definitionId\r\n| join kind=leftouter(\r\n policyResources \r\n | where type =~ 'Microsoft.PolicyInsights/PolicyStates'\r\n | extend complianceState = tostring(properties.complianceState)\r\n | extend policyStateResourceId =id, resourceId = tostring(properties.resourceId), policyAssignmentId = tostring(properties.policyAssignmentId), policyDefinitionId = tostring(properties.policyDefinitionId), policySetDefinitionId = tostring(properties.policySetDefinitionId), policyDefinitionReferenceId = tostring(properties.policyDefinitionReferenceId), policyDefinitionAction = tostring(properties.policyDefinitionAction), policyDefinitionGroupNames = iff(isnotnull(properties.policyDefinitionGroupNames), properties.policyDefinitionGroupNames, dynamic([''])), stateWeight = toint(properties.stateWeight)\r\n | summarize max(stateWeight) by resourceId, policyAssignmentId, policySetDefinitionId\r\n | summarize resourceCounts = count() by policyAssignmentId, policySetDefinitionId, max_stateWeight\r\n| extend complianceState = case(\r\nmax_stateWeight == 300, 'noncompliant',\r\nmax_stateWeight == 200, 'compliant',\r\nmax_stateWeight == 100, 'conflict',\r\nmax_stateWeight == 50, 'exempt',\r\nmax_stateWeight == 10, 'unknown',\r\n'notapplicable')\r\n | extend pack = pack('complianceState', complianceState, 'resourceCounts', resourceCounts), numberOfNonCompliantResources = toint(iff(complianceState =~ 'NonCompliant', resourceCounts,0))\r\n | summarize numberOfNonCompliantResources = max(numberOfNonCompliantResources), details = makelist(pack) by policyAssignmentId, policySetDefinitionId\r\n | limit 5000\r\n) on $left.policyAssignmentId == $right.policyAssignmentId\r\n| sort by numberOfNonCompliantResources desc\r\n| project-away policyAssignmentId1",
+                    "query": "// Breakdown of compliance information for each assignment at subscription/MG/tenant scope\r\n// Gets aggregated compliance and policy definition information for each of the assignments in the selected scope as well as a few additional details, including: policySetDefinition or policyDefinition details for those assignments, the number of policies/groups within the policysetDefinitions listed, number of non-compliant policies within each policySetDefinition and the resource count breakdown per compliance state for those assignments.\r\n// Click the \"Run query\" command above to execute the query and see results.\r\npolicyResources\r\n| where type =~'Microsoft.Authorization/PolicyAssignments'\r\n| project policyAssignmentId = tolower(tostring(id)), policyAssignmentName = name, policyAssignmentDisplayName = tostring(properties.displayName), policyAssignmentScope = tostring(properties.scope), policyAssignmentDefinitionId = tolower(properties.policyDefinitionId), policyAssignmentNotScopes = tolower(properties.notScopes) \r\n| where policyAssignmentScope == \"{Subscription}\"\r\n| join kind=leftouter(\r\n policyResources\r\n | where type =~'Microsoft.Authorization/PolicySetDefinitions' or type =~'Microsoft.Authorization/PolicyDefinitions'\r\n | project definitionId = tolower(id), type, numberOfPolicies = array_length(properties.policyDefinitions), category = tostring(properties.metadata.category), numberOfGroups= array_length(properties.policyDefinitionGroups), mode = tostring(properties.mode)\r\n | extend isRegulatoryInitiative = iff(category =~ 'Regulatory Compliance', true, false)\r\n | extend definitionType = iff(type =~ 'Microsoft.Authorization/PolicysetDefinitions', 'initiative', 'policy')\r\n | extend isRPMode = iff(mode startswith 'Microsoft.', true, false)\r\n | project definitionId, numberOfPolicies, category, numberOfGroups, isRegulatoryInitiative, definitionType, isRPMode\r\n) on $left.policyAssignmentDefinitionId == $right.definitionId\r\n| join kind=leftouter(\r\n policyResources \r\n | where type =~ 'Microsoft.PolicyInsights/PolicyStates'\r\n | extend complianceState = tostring(properties.complianceState)\r\n | extend policyStateResourceId =id, resourceId = tostring(properties.resourceId), policyAssignmentId = tostring(properties.policyAssignmentId), policyDefinitionId = tostring(properties.policyDefinitionId), policySetDefinitionId = tostring(properties.policySetDefinitionId), policyDefinitionReferenceId = tostring(properties.policyDefinitionReferenceId), policyDefinitionAction = tostring(properties.policyDefinitionAction), policyDefinitionGroupNames = iff(isnotnull(properties.policyDefinitionGroupNames), properties.policyDefinitionGroupNames, dynamic([''])), stateWeight = toint(properties.stateWeight)\r\n | summarize max(stateWeight) by resourceId, policyAssignmentId, policySetDefinitionId\r\n | summarize resourceCounts = count() by policyAssignmentId, policySetDefinitionId, max_stateWeight\r\n| extend complianceState = case(\r\nmax_stateWeight == 300, 'noncompliant',\r\nmax_stateWeight == 200, 'compliant',\r\nmax_stateWeight == 100, 'conflict',\r\nmax_stateWeight == 50, 'exempt',\r\nmax_stateWeight == 10, 'unknown',\r\n'notapplicable')\r\n | extend pack = pack('complianceState', complianceState, 'resourceCounts', resourceCounts), numberOfNonCompliantResources = toint(iff(complianceState =~ 'NonCompliant', resourceCounts,0))\r\n | summarize numberOfNonCompliantResources = max(numberOfNonCompliantResources), details = makelist(pack) by policyAssignmentId, policySetDefinitionId\r\n | limit 5000\r\n) on $left.policyAssignmentId == $right.policyAssignmentId\r\n| sort by numberOfNonCompliantResources desc\r\n| project-away policyAssignmentId1",
                     "size": 0,
                     "title": "Resource Compliance",
                     "showExportToExcel": true,
@@ -5233,7 +5316,7 @@
                         "timeContext": {
                           "durationMs": 86400000
                         },
-                        "value": "/subscriptions/e98fff73-a41f-4746-a887-e0423ff6c2f4"
+                        "value": "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
                       },
                       {
                         "id": "b73ef334-95b2-4ead-8dd2-51a90a90ce6f",
@@ -5248,7 +5331,8 @@
                         "jsonData": "[\r\n    { \"value\": \"SubscriptionId\", \"label\": \"Subscription\", \"selected\":true},\r\n    { \"value\": \"ResourceGroup\", \"label\": \"Resource Group\"},\r\n    { \"value\": \"ResourceType\", \"label\": \"Resource Type\"}\r\n]",
                         "timeContext": {
                           "durationMs": 86400000
-                        }
+                        },
+                        "value": "ResourceGroup"
                       },
                       {
                         "id": "55ef4a45-0603-48cf-bb9b-a963e7a33be2",
@@ -5373,12 +5457,11 @@
                       {
                         "id": "6cc7fc26-1a56-41cb-ad43-301e0f9f8903",
                         "version": "KqlParameterItem/1.0",
-                        "name": "<Tag Name to be updated>",
+                        "name": "TagName",
+                        "label": "Tag Name",
                         "type": 2,
-                        "multiSelect": true,
-                        "quote": "\"",
-                        "delimiter": ",",
-                        "query": "resources | distinct tostring(tags.Env)\r\n| where tags_Env != \"\"",
+                        "isRequired": true,
+                        "query": "Resources\r\n| where tags != '' and tags != '[]'\r\n| mvexpand tags\r\n| extend tagName = tostring(bag_keys(tags)[0])\r\n| distinct tagName\r\n| sort by tagName asc",
                         "crossComponentResources": [
                           "{Subscription}"
                         ],
@@ -5391,10 +5474,33 @@
                         },
                         "queryType": 1,
                         "resourceType": "microsoft.resourcegraph/resources",
-                        "value": null
+                        "value": "CostCenter"
+                      },
+                      {
+                        "id": "2fc46f5d-ce69-42ea-8ebf-1c3d69c4e780",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "TagValue",
+                        "label": "Tag Value",
+                        "type": 2,
+                        "isRequired": true,
+                        "query": "Resources\r\n| extend TagValue = tostring(tags.{TagName})\r\n| project TagValue\r\n| distinct TagValue",
+                        "crossComponentResources": [
+                          "{Subscription}"
+                        ],
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "timeContext": {
+                          "durationMs": 86400000
+                        },
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources",
+                        "value": "TOTO"
                       }
                     ],
                     "style": "above",
+                    "doNotRunWhenHidden": true,
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources"
                   },
@@ -5402,13 +5508,13 @@
                     "parameterName": "Subscription",
                     "comparison": "isNotEqualTo"
                   },
-                  "name": "parameters - Environment"
+                  "name": "parameters - TagFilter"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "{\"version\":\"ARMEndpoint/1.0\",\"data\":\" {\\r\\n   \\\"type\\\": \\\"Usage\\\",\\r\\n   \\\"timeframe\\\": \\\"{TimeFrame}\\\",\\r\\n   \\\"dataset\\\": {\\r\\n     \\\"granularity\\\": \\\"None\\\",\\r\\n     \\\"filter\\\": {\\r\\n                 \\\"tags\\\" : {\\r\\n                     \\\"name\\\" : \\\"Env\\\",\\r\\n                     \\\"operator\\\" : \\\"In\\\",\\r\\n                     \\\"values\\\" : [\\r\\n                        {Environment}\\r\\n                     ]\\r\\n                 }\\r\\n     },\\r\\n     \\\"aggregation\\\": {\\r\\n       \\\"totalCost\\\": {\\r\\n         \\\"name\\\": \\\"PreTaxCost\\\",\\r\\n         \\\"function\\\": \\\"Sum\\\"\\r\\n       }\\r\\n     },\\r\\n     \\\"grouping\\\": [\\r\\n       {\\r\\n         \\\"type\\\": \\\"Dimension\\\",\\r\\n         \\\"name\\\": \\\"{Aggregation}\\\"\\r\\n       }\\r\\n     ]\\r\\n   }\\r\\n }\",\"headers\":[],\"method\":\"POST\",\"path\":\"/subscriptions/{Subscription:id}/providers/Microsoft.CostManagement/query?\",\"urlParams\":[{\"key\":\"api-version\",\"value\":\"2019-11-01\"}],\"batchDisabled\":true,\"transformers\":[{\"type\":\"jsonpath\",\"settings\":{\"tablePath\":\"$.properties\",\"columns\":[]}}]}",
+                    "query": "{\"version\":\"ARMEndpoint/1.0\",\"data\":\" {\\r\\n   \\\"type\\\": \\\"Usage\\\",\\r\\n   \\\"timeframe\\\": \\\"{TimeFrame}\\\",\\r\\n   \\\"dataset\\\": {\\r\\n     \\\"granularity\\\": \\\"None\\\",\\r\\n     \\\"filter\\\": {\\r\\n                 \\\"tags\\\" : {\\r\\n                     \\\"name\\\" : \\\"{TagName}\\\",\\r\\n                     \\\"operator\\\" : \\\"In\\\",\\r\\n                     \\\"values\\\" : [\\r\\n                        \\\"{TagValue}\\\"\\r\\n                     ]\\r\\n                 }\\r\\n     },\\r\\n     \\\"aggregation\\\": {\\r\\n       \\\"totalCost\\\": {\\r\\n         \\\"name\\\": \\\"PreTaxCost\\\",\\r\\n         \\\"function\\\": \\\"Sum\\\"\\r\\n       }\\r\\n     },\\r\\n     \\\"grouping\\\": [\\r\\n       {\\r\\n         \\\"type\\\": \\\"Dimension\\\",\\r\\n         \\\"name\\\": \\\"{Aggregation}\\\"\\r\\n       }\\r\\n     ]\\r\\n   }\\r\\n }\",\"headers\":[],\"method\":\"POST\",\"path\":\"/subscriptions/{Subscription:id}/providers/Microsoft.CostManagement/query?\",\"urlParams\":[{\"key\":\"api-version\",\"value\":\"2019-11-01\"}],\"batchDisabled\":true,\"transformers\":[{\"type\":\"jsonpath\",\"settings\":{\"tablePath\":\"$.properties\",\"columns\":[]}}]}",
                     "size": 3,
                     "title": "Overall Cost Filtered by Tag",
                     "showExportToExcel": true,
@@ -5465,7 +5571,7 @@
                     }
                   },
                   "conditionalVisibility": {
-                    "parameterName": "Environment",
+                    "parameterName": "TagValue",
                     "comparison": "isNotEqualTo",
                     "value": ""
                   },

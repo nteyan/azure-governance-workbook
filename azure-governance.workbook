@@ -185,8 +185,7 @@
                     "durationMs": 86400000
                   },
                   "queryType": 1,
-                  "resourceType": "microsoft.resources/tenants",
-                  "value": []
+                  "resourceType": "microsoft.resources/tenants"
                 }
               ],
               "style": "above",
@@ -243,7 +242,7 @@
                   "content": {
                     "json": "The objective of this workbook is to provide a comprehensive overview of the governance posture of your Azure environment. It offers the standard metrics aligned with the Cloud Adoption Framework for all the disciplines and has the capability to identify and apply recommendations to identify non compliance.\r\n\r\n## Overview of the Cloud Adoption Framework\r\n\r\n* With any cloud platform, there are common governance disciplines that help inform policies and align toolchains. These disciplines guide decisions about the proper level of automation and enforcement of corporate policy across cloud platforms.\r\n\r\n|Discipline|Description|\r\n|---|---|\r\n| [Cost Management](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/govern/cost-management/)  | Cost is a primary concern for cloud users. Develop policies for cost control for all cloud platforms.\r\n| [Security Baseline](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/govern/security-baseline/) | Security is a complex subject, unique to each company. Once security requirements are established, cloud governance policies and enforcement apply those requirements across network, data, and asset configurations.\r\n| [Identity Baseline](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/govern/identity-baseline/) | Inconsistencies in the application of identity requirements can increase the risk of breach. The Identity Baseline discipline focuses on ensuring that identity is consistently applied across cloud adoption efforts.\r\n| [Resource Consistency](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/govern/resource-consistency/) | Cloud operations depend on consistent resource configuration. Through governance tooling, resources can be configured consistently to manage risks related to onboarding, drift, discoverability, and recovery.\r\n| [Deployment Acceleration](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/govern/deployment-acceleration/) | Centralization, standardization, and consistency in approaches to deployment and configuration improve governance practices. When provided through cloud-based governance tooling, they create a cloud factor that can accelerate deployment activities.\r\n\r\n* To assess your transformation journey, try the [governance benchmark tool](https://learn.microsoft.com/en-us/assessments/b1891add-7646-4d60-a875-32a4ab26327e).\r\n\r\n\r\n\r\n\r\n"
                   },
-                  "name": "text - 6"
+                  "name": "text - Overview"
                 },
                 {
                   "type": 1,
@@ -1488,6 +1487,13 @@
               "groupType": "editable",
               "items": [
                 {
+                  "type": 1,
+                  "content": {
+                    "json": "## Stay informed and act quickly on service issues\r\nAzure Service Health notifies you about Azure service incidents and planned maintenance so you can take action to mitigate downtime. Configure customisable cloud alerts and use your personalised dashboard to analyse health issues, monitor the impact to your cloud resources, get guidance and support, and share details and updates."
+                  },
+                  "name": "text - 4"
+                },
+                {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
@@ -2261,6 +2267,13 @@
                 {
                   "type": 1,
                   "content": {
+                    "json": "## Use tags to organize your Azure resources and management hierarchy\r\nTags are metadata elements that you apply to your Azure resources. They're key-value pairs that help you identify resources based on settings that are relevant to your organization. If you want to track the deployment environment for your resources, add a key named Environment. To identify the resources deployed to production, give them a value of Production. The fully-formed key-value pair is Environment = Production.\r\n\r\nTo get more information about tags, see [Resource naming and tagging decision guide](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming-and-tagging-decision-guide?toc=%2Fazure%2Fazure-resource-manager%2Fmanagement%2Ftoc.json)"
+                  },
+                  "name": "text - 9"
+                },
+                {
+                  "type": 1,
+                  "content": {
                     "json": "Tag names with spaces, hyphens, and underscores are not supported.",
                     "style": "warning"
                   },
@@ -2293,7 +2306,8 @@
                           "durationMs": 86400000
                         },
                         "queryType": 1,
-                        "resourceType": "microsoft.resourcegraph/resources"
+                        "resourceType": "microsoft.resourcegraph/resources",
+                        "value": null
                       }
                     ],
                     "style": "formVertical",
@@ -2567,6 +2581,21 @@
               "groupType": "editable",
               "items": [
                 {
+                  "type": 1,
+                  "content": {
+                    "json": "Azure Backup now provides a set of customizable reporting templates to help you generate audit evidence reports for backup in an easier way. [Click here](https://aka.ms/BCDRAuditReportTemplates) to access these templates.",
+                    "style": "upsell"
+                  },
+                  "name": "AuditText"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "## Manage and securely backup your resources\r\nExplore and monitor backup estate at scale in real time across vaults."
+                  },
+                  "name": "text - 8"
+                },
+                {
                   "type": 9,
                   "content": {
                     "version": "KqlParameterItem/1.0",
@@ -2605,24 +2634,6 @@
                   },
                   "customWidth": "100",
                   "name": "Filters1"
-                },
-                {
-                  "type": 1,
-                  "content": {
-                    "json": "_____________________"
-                  },
-                  "name": "Line1"
-                },
-                {
-                  "type": 1,
-                  "content": {
-                    "json": "## Backup job history"
-                  },
-                  "conditionalVisibility": {
-                    "parameterName": "Workspaces",
-                    "comparison": "isNotEqualTo"
-                  },
-                  "name": "Heading2"
                 },
                 {
                   "type": 9,
@@ -2792,6 +2803,17 @@
                     "comparison": "isNotEqualTo"
                   },
                   "name": "Filters2"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "## Backup job history"
+                  },
+                  "conditionalVisibility": {
+                    "parameterName": "Workspaces",
+                    "comparison": "isNotEqualTo"
+                  },
+                  "name": "Heading2"
                 },
                 {
                   "type": 3,
@@ -4821,11 +4843,18 @@
                         "value": null
                       }
                     ],
-                    "style": "formVertical",
+                    "style": "above",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces"
                   },
-                  "name": "parameters - 10"
+                  "name": "parameters - SubscriptionAge"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "## Azure resource age\r\nAzure *resource age* is one of the metric to monitor as part of the \"resource consistency\" discipline of the Cloud Adoption Framework. This metric help you to identify old resources to be assessed and cleaned if they are not used anymore."
+                  },
+                  "name": "text - 2"
                 },
                 {
                   "type": 3,
@@ -4967,8 +4996,7 @@
                         "jsonData": "[\r\n    { \"value\": \"SubscriptionId\", \"label\": \"Subscription\", \"selected\":true},\r\n    { \"value\": \"ResourceGroup\", \"label\": \"Resource Group\"},\r\n    { \"value\": \"ResourceType\", \"label\": \"Resource Type\"}\r\n]",
                         "timeContext": {
                           "durationMs": 86400000
-                        },
-                        "value": "ResourceGroup"
+                        }
                       },
                       {
                         "id": "55ef4a45-0603-48cf-bb9b-a963e7a33be2",
@@ -4991,6 +5019,13 @@
                     "resourceType": "microsoft.operationalinsights/workspaces"
                   },
                   "name": "parameters - Cost Subscription"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "## Azure Cost Management\r\n\r\nBefore you can control and optimize your costs, you first need to understand where they originated – from the underlying resources used to support your cloud projects to the environments they're deployed in and the owners who manage them. Full visibility backed by a thorough tagging strategy is critical to accurately understand your spending patterns and enforce cost control mechanisms.\r\n\r\n[Cost Management](https://portal.azure.com/#view/Microsoft_Azure_CostManagement/Menu/~/overview) is a set of FinOps tools that enable you to analyze, manage, and optimize your costs.\r\n\r\nCalculate your estimated hourly or monthly costs for using Azure with the [Azure Calculator](https://azure.microsoft.com/en-us/pricing/calculator/).\r\n\r\nCreate visuals and reports with the [Azure Cost Management connector](https://learn.microsoft.com/en-us/power-bi/connect-data/desktop-connect-azure-cost-management) in Power BI Desktop."
+                  },
+                  "name": "text - AzureCostManagement"
                 },
                 {
                   "type": 3,
@@ -5231,13 +5266,6 @@
               "loadType": "always",
               "items": [
                 {
-                  "type": 1,
-                  "content": {
-                    "json": "## Build and scale your applications quickly while maintaining control\r\nTake advantage of built-in and custom policies to set guardrails in your subscriptions. Easily deploy fully governed environments throughout your organization with Azure Blueprints. And, manage costs by gaining insights into your cloud spend so that you get the most from your cloud investments.<br>\r\n- Enforce and audit your policies for any Azure service<br>\r\n- Create compliant environments using Azure Blueprints, including resources, policies, and role-access controls<br>\r\n- Ensure that you’re compliant with external regulations by using built-in compliance controls<br>\r\n- Monitor spend and encourage accountability across your entire organization"
-                  },
-                  "name": "text - 16"
-                },
-                {
                   "type": 9,
                   "content": {
                     "version": "KqlParameterItem/1.0",
@@ -5298,6 +5326,13 @@
                     "value": "RC_Compliance"
                   },
                   "name": "parameters - Scope Filter For RC_Compliance"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "## Build and scale your applications quickly while maintaining control\r\nTake advantage of built-in and custom policies to set guardrails in your subscriptions. Easily deploy fully governed environments throughout your organization with Azure Blueprints. And, manage costs by gaining insights into your cloud spend so that you get the most from your cloud investments.<br>\r\n- Enforce and audit your policies for any Azure service<br>\r\n- Create compliant environments using Azure Blueprints, including resources, policies, and role-access controls<br>\r\n- Ensure that you’re compliant with external regulations by using built-in compliance controls<br>\r\n- Monitor spend and encourage accountability across your entire organization"
+                  },
+                  "name": "text - 16"
                 },
                 {
                   "type": 3,
@@ -6901,27 +6936,6 @@
                         "queryType": 1,
                         "resourceType": "microsoft.resourcegraph/resources",
                         "value": "westeurope"
-                      },
-                      {
-                        "id": "35da4e29-594a-43dc-8ac9-7190b8ba7a2b",
-                        "version": "KqlParameterItem/1.0",
-                        "name": "ResourceType",
-                        "label": "Resource type",
-                        "type": 2,
-                        "query": "Resources\r\n| extend provider = tostring(split(type, '/', 0))\r\n| parse provider with * '[\"' text '\"]'\r\n| distinct text\r\n| where text == \"microsoft.compute\"",
-                        "crossComponentResources": [
-                          "{Subscription}"
-                        ],
-                        "typeSettings": {
-                          "additionalResourceOptions": [],
-                          "showDefault": false
-                        },
-                        "timeContext": {
-                          "durationMs": 86400000
-                        },
-                        "queryType": 1,
-                        "resourceType": "microsoft.resourcegraph/resources",
-                        "value": "microsoft.compute"
                       }
                     ],
                     "style": "above",
@@ -6931,14 +6945,117 @@
                   "name": "parameters - 0"
                 },
                 {
+                  "type": 1,
+                  "content": {
+                    "json": "## Azure subscription and service limits, quotas, and constraints<br>\r\nTo know more about Azure service limits & quotas, see [Azure subscription and service limits, quotas, and constraints](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/azure-subscription-service-limits?toc=%2Fazure%2Fnetworking%2Ftoc.json#networking-limits)."
+                  },
+                  "name": "text - Limits"
+                },
+                {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "{\"version\":\"ARMEndpoint/1.0\",\"data\":null,\"headers\":[],\"method\":\"GET\",\"path\":\"/subscriptions/{Subscription:id}/providers/Microsoft.Capacity/resourceProviders/{ResourceType}/locations/{Location}/serviceLimits?api-version=2020-10-25\",\"urlParams\":[],\"batchDisabled\":false,\"transformers\":[{\"type\":\"jsonpath\",\"settings\":{\"tablePath\":\"$.value\",\"columns\":[{\"path\":\"properties.currentValue\",\"columnid\":\"CoresUsed\"},{\"path\":\"properties.limit\",\"columnid\":\"Limit\"},{\"path\":\"properties.name.value\",\"columnid\":\"Sku\"}]}}]}",
+                    "query": "{\"version\":\"ARMEndpoint/1.0\",\"data\":null,\"headers\":[],\"method\":\"GET\",\"path\":\"/subscriptions/{Subscription:id}/providers/microsoft.compute/locations/{Location}/usages?api-version=2022-03-01\",\"urlParams\":[],\"batchDisabled\":false,\"transformers\":[{\"type\":\"jsonpath\",\"settings\":{\"tablePath\":\"$.value\",\"columns\":[{\"path\":\"currentValue\",\"columnid\":\"Used\",\"columnType\":\"long\"},{\"path\":\"limit\",\"columnid\":\"Limit\",\"columnType\":\"long\"},{\"path\":\"name.localizedValue\",\"columnid\":\"Resource\"}]}}]}",
                     "size": 0,
-                    "queryType": 12
+                    "title": "Compute resource limits",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 12,
+                    "gridSettings": {
+                      "filter": true,
+                      "sortBy": [
+                        {
+                          "itemKey": "Limit",
+                          "sortOrder": 1
+                        }
+                      ]
+                    },
+                    "sortBy": [
+                      {
+                        "itemKey": "Limit",
+                        "sortOrder": 1
+                      }
+                    ]
                   },
-                  "name": "query - 1"
+                  "customWidth": "50",
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "Subscription",
+                      "comparison": "isNotEqualTo",
+                      "value": ""
+                    },
+                    {
+                      "parameterName": "Location",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
+                  "name": "query - ComputeLimits"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "{\"version\":\"ARMEndpoint/1.0\",\"data\":null,\"headers\":[],\"method\":\"GET\",\"path\":\"/subscriptions/{Subscription:id}/providers/microsoft.network/locations/{Location}/usages?api-version=2022-01-01\",\"urlParams\":[],\"batchDisabled\":false,\"transformers\":[{\"type\":\"jsonpath\",\"settings\":{\"tablePath\":\"$.value\",\"columns\":[{\"path\":\"currentValue\",\"columnid\":\"Used\",\"columnType\":\"long\"},{\"path\":\"limit\",\"columnid\":\"Limit\",\"columnType\":\"long\"},{\"path\":\"name.localizedValue\",\"columnid\":\"Resource\"}]}}]}",
+                    "size": 0,
+                    "title": "Network resource limits",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 12,
+                    "gridSettings": {
+                      "filter": true,
+                      "sortBy": [
+                        {
+                          "itemKey": "Limit",
+                          "sortOrder": 1
+                        }
+                      ]
+                    },
+                    "sortBy": [
+                      {
+                        "itemKey": "Limit",
+                        "sortOrder": 1
+                      }
+                    ]
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {
+                    "parameterName": "Subscription",
+                    "comparison": "isNotEqualTo"
+                  },
+                  "name": "query - NetworkLimits"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "{\"version\":\"ARMEndpoint/1.0\",\"data\":null,\"headers\":[],\"method\":\"GET\",\"path\":\"/subscriptions/{Subscription:id}/providers/microsoft.storage/locations/{Location}/usages?api-version=2021-09-01\",\"urlParams\":[],\"batchDisabled\":false,\"transformers\":[{\"type\":\"jsonpath\",\"settings\":{\"tablePath\":\"$.value\",\"columns\":[{\"path\":\"currentValue\",\"columnid\":\"Used\",\"columnType\":\"long\"},{\"path\":\"limit\",\"columnid\":\"Limit\",\"columnType\":\"long\"},{\"path\":\"name.localizedValue\",\"columnid\":\"Resource\"}]}}]}",
+                    "size": 4,
+                    "title": "Storage account limits",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 12,
+                    "gridSettings": {
+                      "filter": true,
+                      "sortBy": [
+                        {
+                          "itemKey": "Limit",
+                          "sortOrder": 1
+                        }
+                      ]
+                    },
+                    "sortBy": [
+                      {
+                        "itemKey": "Limit",
+                        "sortOrder": 1
+                      }
+                    ]
+                  },
+                  "customWidth": "100",
+                  "conditionalVisibility": {
+                    "parameterName": "Subscription",
+                    "comparison": "isNotEqualTo"
+                  },
+                  "name": "query - StorageLimits"
                 }
               ]
             },

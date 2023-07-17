@@ -185,7 +185,8 @@
                     "durationMs": 86400000
                   },
                   "queryType": 1,
-                  "resourceType": "microsoft.resources/tenants"
+                  "resourceType": "microsoft.resources/tenants",
+                  "value": []
                 }
               ],
               "style": "above",
@@ -950,8 +951,7 @@
                           }
                         }
                       },
-                      "showBorder": false,
-                      "size": "full"
+                      "showBorder": false
                     },
                     "graphSettings": {
                       "type": 0,
@@ -2590,13 +2590,12 @@
                           "{Subscription}"
                         ],
                         "typeSettings": {
-                          "additionalResourceOptions": [
-                            "value::all"
-                          ],
+                          "additionalResourceOptions": [],
                           "showDefault": false
                         },
                         "queryType": 1,
-                        "resourceType": "microsoft.resourcegraph/resources"
+                        "resourceType": "microsoft.resourcegraph/resources",
+                        "value": []
                       }
                     ],
                     "style": "above",
@@ -2694,7 +2693,10 @@
                           "showDefault": false
                         },
                         "queryType": 0,
-                        "resourceType": "microsoft.operationalinsights/workspaces"
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "value": [
+                          "/subscriptions/3D2171D3-2B1E-41D6-A62C-DC780B0C5A04"
+                        ]
                       },
                       {
                         "id": "256c7e33-df90-4956-aaf3-699aeaad912f",
@@ -6860,6 +6862,9 @@
                   "type": 9,
                   "content": {
                     "version": "KqlParameterItem/1.0",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
                     "parameters": [
                       {
                         "id": "cc98cfec-0182-4887-854e-536e9f3857da",
@@ -6895,15 +6900,15 @@
                         },
                         "queryType": 1,
                         "resourceType": "microsoft.resourcegraph/resources",
-                        "value": null
+                        "value": "westeurope"
                       },
                       {
                         "id": "35da4e29-594a-43dc-8ac9-7190b8ba7a2b",
                         "version": "KqlParameterItem/1.0",
                         "name": "ResourceType",
+                        "label": "Resource type",
                         "type": 2,
-                        "isRequired": true,
-                        "query": "Resources\r\n| extend provider = tostring(split(type, '/', 0))\r\n| parse provider with * '[\"' text '\"]'\r\n| distinct text",
+                        "query": "Resources\r\n| extend provider = tostring(split(type, '/', 0))\r\n| parse provider with * '[\"' text '\"]'\r\n| distinct text\r\n| where text == \"microsoft.compute\"",
                         "crossComponentResources": [
                           "{Subscription}"
                         ],
@@ -6916,13 +6921,12 @@
                         },
                         "queryType": 1,
                         "resourceType": "microsoft.resourcegraph/resources",
-                        "value": "microsoft.compute",
-                        "label": "Resource type"
+                        "value": "microsoft.compute"
                       }
                     ],
                     "style": "above",
-                    "queryType": 0,
-                    "resourceType": "microsoft.operationalinsights/workspaces"
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources"
                   },
                   "name": "parameters - 0"
                 },

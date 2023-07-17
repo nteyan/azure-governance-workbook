@@ -6860,20 +6860,14 @@
                   "type": 9,
                   "content": {
                     "version": "KqlParameterItem/1.0",
-                    "crossComponentResources": [
-                      "{Subscription}"
-                    ],
                     "parameters": [
                       {
                         "id": "cc98cfec-0182-4887-854e-536e9f3857da",
                         "version": "KqlParameterItem/1.0",
                         "name": "Subscription",
                         "type": 6,
-                        "isRequired": true,
                         "typeSettings": {
-                          "additionalResourceOptions": [
-                            "value::1"
-                          ],
+                          "additionalResourceOptions": [],
                           "includeAll": true,
                           "showDefault": false
                         },
@@ -6900,7 +6894,8 @@
                           "durationMs": 86400000
                         },
                         "queryType": 1,
-                        "resourceType": "microsoft.operationalinsights/workspaces"
+                        "resourceType": "microsoft.resourcegraph/resources",
+                        "value": null
                       },
                       {
                         "id": "35da4e29-594a-43dc-8ac9-7190b8ba7a2b",
@@ -6926,7 +6921,7 @@
                       }
                     ],
                     "style": "above",
-                    "queryType": 1,
+                    "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces"
                   },
                   "name": "parameters - 0"

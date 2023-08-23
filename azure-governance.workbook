@@ -149,7 +149,7 @@
                   },
                   "queryType": 1,
                   "resourceType": "microsoft.resources/tenants",
-                  "value": "Prod"
+                  "value": null
                 },
                 {
                   "id": "30297a43-7d69-4daf-93c9-8170d5a995b0",

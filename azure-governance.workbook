@@ -771,7 +771,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "Resources  \r\n| where type contains \"microsoft.compute/disks\" \r\n| extend diskState = tostring(properties.diskState)\r\n| where managedBy == \"\" or diskState == 'Unattached'\r\n| project id, subscriptionId, resourceGroup, diskState, location",
+                          "query": "resources\r\n| where type contains \"microsoft.compute/disks\"\r\n| extend diskState = tostring(properties.diskState)\r\n| extend SKUName=sku.name, DiskSizeGB=tostring(properties.diskSizeGB)\r\n| where managedBy == \"\" and diskState != 'ActiveSAS' or diskState == 'Unattached' and diskState != 'ActiveSAS'\r\n| join (\r\nresourcechanges\r\n| extend TargetResourceType = tostring(properties.targetResourceType),\r\n        id = tostring(properties.targetResourceId),\r\n        ChangeType = tostring(properties.changes.managedBy.propertyChangeType),\r\n        previousVM = tostring(properties.changes.managedBy.previousValue),\r\n        newValue = tostring(properties.changes.managedBy.newValue),\r\n        Timestamp = todatetime(properties.changeAttributes.timestamp)\r\n| where TargetResourceType == \"microsoft.compute/disks\" \r\n        and isempty(newValue)\r\n| summarize arg_max(Timestamp, previousVM) by id\r\n| extend TimeDetached = datetime_diff('day', now(), Timestamp)) on id\r\n| project id, subscriptionId, resourceGroup, SKUName, DiskSizeGB, TimeDetached",
                           "size": 0,
                           "title": "Orphaned disks",
                           "noDataMessage": "No orphaned disk",
@@ -812,12 +812,16 @@
                                 "label": "Resource group"
                               },
                               {
-                                "columnId": "diskState",
-                                "label": "Disk state"
+                                "columnId": "SKUName",
+                                "label": "Tier + redundancy"
                               },
                               {
-                                "columnId": "location",
-                                "label": "Region"
+                                "columnId": "DiskSizeGB",
+                                "label": "Disk size (GB)"
+                              },
+                              {
+                                "columnId": "TimeDetached",
+                                "label": "Time Detached (days)"
                               }
                             ]
                           }
@@ -925,7 +929,7 @@
                               },
                               "queryType": 1,
                               "resourceType": "microsoft.resourcegraph/resources",
-                              "value": "VM deallocated"
+                              "value": null
                             }
                           ],
                           "style": "above",
@@ -2777,7 +2781,7 @@
                         "timeContext": {
                           "durationMs": 86400000
                         },
-                        "value": "|"
+                        "value": "//"
                       }
                     ],
                     "style": "above",
@@ -2830,7 +2834,7 @@
                         "timeContext": {
                           "durationMs": 86400000
                         },
-                        "value": "=="
+                        "value": "!="
                       }
                     ],
                     "style": "above",
@@ -3628,8 +3632,7 @@
                               "type": 1,
                               "isGlobal": true,
                               "isHiddenWhenLocked": true,
-                              "label": "Resource ID",
-                              "value": "All"
+                              "label": "Resource ID"
                             },
                             {
                               "id": "e505498f-d2eb-4dd6-928f-0f0f0e9cc371",
@@ -3638,8 +3641,7 @@
                               "type": 1,
                               "isGlobal": true,
                               "isHiddenWhenLocked": true,
-                              "label": "Alert display name",
-                              "value": "All"
+                              "label": "Alert display name"
                             },
                             {
                               "id": "39e382f9-4780-40fa-8595-15eda0f08ad4",
@@ -3648,8 +3650,7 @@
                               "type": 1,
                               "isGlobal": true,
                               "isHiddenWhenLocked": true,
-                              "label": "New alert",
-                              "value": "All"
+                              "label": "New alert"
                             }
                           ],
                           "style": "above",
@@ -5164,7 +5165,7 @@
                         "timeContext": {
                           "durationMs": 86400000
                         },
-                        "value": null
+                        "value": "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
                       }
                     ],
                     "style": "above",
@@ -5366,6 +5367,21 @@
                   "name": "text - AzureCostManagement"
                 },
                 {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "template",
+                    "loadFromTemplateId": "community-Workbooks/Common/noSubscriptions",
+                    "items": []
+                  },
+                  "conditionalVisibility": {
+                    "parameterName": "Subscription",
+                    "comparison": "isEqualTo",
+                    "value": ""
+                  },
+                  "name": "No Subscriptions group - RC_Cost"
+                },
+                {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
@@ -5470,7 +5486,6 @@
                         "name": "TagName",
                         "label": "Tag name",
                         "type": 2,
-                        "isRequired": true,
                         "query": "Resources\r\n| where tags != '' and tags != '[]'\r\n| mvexpand tags\r\n| extend tagName = tostring(bag_keys(tags)[0])\r\n| distinct tagName\r\n| sort by tagName asc",
                         "crossComponentResources": [
                           "{Subscription}"
@@ -5484,7 +5499,7 @@
                         },
                         "queryType": 1,
                         "resourceType": "microsoft.resourcegraph/resources",
-                        "value": ""
+                        "value": null
                       },
                       {
                         "id": "2fc46f5d-ce69-42ea-8ebf-1c3d69c4e780",
@@ -5506,7 +5521,7 @@
                         },
                         "queryType": 1,
                         "resourceType": "microsoft.resourcegraph/resources",
-                        "value": ""
+                        "value": null
                       }
                     ],
                     "style": "above",
@@ -5527,6 +5542,7 @@
                     "query": "{\"version\":\"ARMEndpoint/1.0\",\"data\":\" {\\r\\n   \\\"type\\\": \\\"Usage\\\",\\r\\n   \\\"timeframe\\\": \\\"{TimeFrame}\\\",\\r\\n   \\\"dataset\\\": {\\r\\n     \\\"granularity\\\": \\\"None\\\",\\r\\n     \\\"filter\\\": {\\r\\n                 \\\"tags\\\" : {\\r\\n                     \\\"name\\\" : \\\"{TagName}\\\",\\r\\n                     \\\"operator\\\" : \\\"In\\\",\\r\\n                     \\\"values\\\" : [\\r\\n                        \\\"{TagValue}\\\"\\r\\n                     ]\\r\\n                 }\\r\\n     },\\r\\n     \\\"aggregation\\\": {\\r\\n       \\\"totalCost\\\": {\\r\\n         \\\"name\\\": \\\"PreTaxCost\\\",\\r\\n         \\\"function\\\": \\\"Sum\\\"\\r\\n       }\\r\\n     },\\r\\n     \\\"grouping\\\": [\\r\\n       {\\r\\n         \\\"type\\\": \\\"Dimension\\\",\\r\\n         \\\"name\\\": \\\"{Aggregation}\\\"\\r\\n       }\\r\\n     ]\\r\\n   }\\r\\n }\",\"headers\":[],\"method\":\"POST\",\"path\":\"/subscriptions/{Subscription:id}/providers/Microsoft.CostManagement/query?\",\"urlParams\":[{\"key\":\"api-version\",\"value\":\"2019-11-01\"}],\"batchDisabled\":true,\"transformers\":[{\"type\":\"jsonpath\",\"settings\":{\"tablePath\":\"$.properties\",\"columns\":[]}}]}",
                     "size": 3,
                     "title": "Overall cost filtered by tag",
+                    "showRefreshButton": true,
                     "showExportToExcel": true,
                     "queryType": 12,
                     "gridSettings": {
@@ -5580,11 +5596,17 @@
                       "showBorder": false
                     }
                   },
-                  "conditionalVisibility": {
-                    "parameterName": "TagValue",
-                    "comparison": "isNotEqualTo",
-                    "value": ""
-                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "TagValue",
+                      "comparison": "isNotEqualTo",
+                      "value": ""
+                    },
+                    {
+                      "parameterName": "Subscription",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
                   "name": "query - Sub cost per tag"
                 }
               ]
@@ -5672,6 +5694,21 @@
                     "json": "## Build and scale your applications quickly while maintaining control\r\nTake advantage of built-in and custom policies to set guardrails in your subscriptions. Easily deploy fully governed environments throughout your organization with Azure Blueprints. And, manage costs by gaining insights into your cloud spend so that you get the most from your cloud investments.<br>\r\n- Enforce and audit your policies for any Azure service<br>\r\n- Create compliant environments using Azure Blueprints, including resources, policies, and role-access controls<br>\r\n- Ensure that you’re compliant with external regulations by using built-in compliance controls<br>\r\n- Monitor cost and encourage accountability across your entire organization"
                   },
                   "name": "text - 16"
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "template",
+                    "loadFromTemplateId": "community-Workbooks/Common/noSubscriptions",
+                    "items": []
+                  },
+                  "conditionalVisibility": {
+                    "parameterName": "Subscription",
+                    "comparison": "isEqualTo",
+                    "value": ""
+                  },
+                  "name": "No Subscriptions group - Compliance"
                 },
                 {
                   "type": 12,
@@ -7255,7 +7292,7 @@
                         "timeContext": {
                           "durationMs": 86400000
                         },
-                        "value": "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
+                        "value": null
                       },
                       {
                         "id": "1c3411d9-e319-4d74-8e97-61e2f4c56a56",
@@ -7939,6 +7976,16 @@
                 "parameterName": "SelectedTab",
                 "comparison": "isNotEqualTo",
                 "value": "RC_Age"
+              },
+              {
+                "parameterName": "SelectedTab",
+                "comparison": "isNotEqualTo",
+                "value": "RC_Compliance"
+              },
+              {
+                "parameterName": "SelectedTab",
+                "comparison": "isNotEqualTo",
+                "value": "RC_Cost"
               }
             ],
             "name": "No Subscriptions group"
@@ -7949,7 +7996,7 @@
     }
   ],
   "fallbackResourceIds": [
-    "Azure Monitor"
+    "azure monitor"
   ],
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
 }

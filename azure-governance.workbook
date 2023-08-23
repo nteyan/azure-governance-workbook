@@ -149,7 +149,7 @@
                   },
                   "queryType": 1,
                   "resourceType": "microsoft.resources/tenants",
-                  "value": "Prod"
+                  "value": null
                 },
                 {
                   "id": "30297a43-7d69-4daf-93c9-8170d5a995b0",
@@ -771,7 +771,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "Resources  \r\n| where type contains \"microsoft.compute/disks\" \r\n| extend diskState = tostring(properties.diskState)\r\n| where managedBy == \"\" or diskState == 'Unattached'\r\n| project id, subscriptionId, resourceGroup, diskState, location",
+                          "query": "resources\r\n| where type contains \"microsoft.compute/disks\"\r\n| extend diskState = tostring(properties.diskState)\r\n| extend SKUName=sku.name, DiskSizeGB=tostring(properties.diskSizeGB)\r\n| where managedBy == \"\" and diskState != 'ActiveSAS' or diskState == 'Unattached' and diskState != 'ActiveSAS'\r\n| join (\r\nresourcechanges\r\n| extend TargetResourceType = tostring(properties.targetResourceType),\r\n        id = tostring(properties.targetResourceId),\r\n        ChangeType = tostring(properties.changes.managedBy.propertyChangeType),\r\n        previousVM = tostring(properties.changes.managedBy.previousValue),\r\n        newValue = tostring(properties.changes.managedBy.newValue),\r\n        Timestamp = todatetime(properties.changeAttributes.timestamp)\r\n| where TargetResourceType == \"microsoft.compute/disks\" \r\n        and isempty(newValue)\r\n| summarize arg_max(Timestamp, previousVM) by id\r\n| extend TimeDetached = datetime_diff('day', now(), Timestamp)) on id\r\n| project id, subscriptionId, resourceGroup, SKUName, DiskSizeGB, TimeDetached",
                           "size": 0,
                           "title": "Orphaned disks",
                           "noDataMessage": "No orphaned disk",
@@ -812,12 +812,16 @@
                                 "label": "Resource group"
                               },
                               {
-                                "columnId": "diskState",
-                                "label": "Disk state"
+                                "columnId": "SKUName",
+                                "label": "Tier + redundancy"
                               },
                               {
-                                "columnId": "location",
-                                "label": "Region"
+                                "columnId": "DiskSizeGB",
+                                "label": "Disk size (GB)"
+                              },
+                              {
+                                "columnId": "TimeDetached",
+                                "label": "Time Detached (days)"
                               }
                             ]
                           }
@@ -925,7 +929,7 @@
                               },
                               "queryType": 1,
                               "resourceType": "microsoft.resourcegraph/resources",
-                              "value": "VM deallocated"
+                              "value": null
                             }
                           ],
                           "style": "above",
@@ -2777,7 +2781,7 @@
                         "timeContext": {
                           "durationMs": 86400000
                         },
-                        "value": "|"
+                        "value": "//"
                       }
                     ],
                     "style": "above",
@@ -2830,7 +2834,7 @@
                         "timeContext": {
                           "durationMs": 86400000
                         },
-                        "value": "=="
+                        "value": "!="
                       }
                     ],
                     "style": "above",
@@ -3628,8 +3632,7 @@
                               "type": 1,
                               "isGlobal": true,
                               "isHiddenWhenLocked": true,
-                              "label": "Resource ID",
-                              "value": "All"
+                              "label": "Resource ID"
                             },
                             {
                               "id": "e505498f-d2eb-4dd6-928f-0f0f0e9cc371",
@@ -3638,8 +3641,7 @@
                               "type": 1,
                               "isGlobal": true,
                               "isHiddenWhenLocked": true,
-                              "label": "Alert display name",
-                              "value": "All"
+                              "label": "Alert display name"
                             },
                             {
                               "id": "39e382f9-4780-40fa-8595-15eda0f08ad4",
@@ -3648,8 +3650,7 @@
                               "type": 1,
                               "isGlobal": true,
                               "isHiddenWhenLocked": true,
-                              "label": "New alert",
-                              "value": "All"
+                              "label": "New alert"
                             }
                           ],
                           "style": "above",
@@ -7255,7 +7256,7 @@
                         "timeContext": {
                           "durationMs": 86400000
                         },
-                        "value": "/subscriptions/3d2171d3-2b1e-41d6-a62c-dc780b0c5a04"
+                        "value": null
                       },
                       {
                         "id": "1c3411d9-e319-4d74-8e97-61e2f4c56a56",

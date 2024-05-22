@@ -1,3 +1,4 @@
+:warning: The Azure Governance workbook has been moved to the Microsoft Github repository. To get it, please follow this [link](https://github.com/microsoft/finops-toolkit/blob/main/src/workbooks/governance/workbook.json) :warning:
 # Azure Governance Workbook
 ![AzureWorkbook](/images/govworkbook1.png)
 ## Azure Workbooks
